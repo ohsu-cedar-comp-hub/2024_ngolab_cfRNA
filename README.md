@@ -6,8 +6,8 @@ See **Analysis_Scripts** for code to reproduce all data analysis reported in mai
 
 ## Software requirements
 R version 4.1 or higher.
-Python version 
-Snakemake version
+Python version 3.6 or higher.
+Snakemake version 6.5 or higher.
 
 Processing pipeline recommended for use in a linux HPC environment.
 
