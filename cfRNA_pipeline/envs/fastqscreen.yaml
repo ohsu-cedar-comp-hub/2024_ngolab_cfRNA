@@ -1,0 +1,47 @@
+name: fastqscreen
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - bowtie=1.0.0=1
+  - bowtie2=2.3.5.1=py37he513fc3_0
+  - ca-certificates=2021.4.13=h06a4308_1
+  - certifi=2020.12.5=py37h06a4308_0
+  - expat=2.3.0=h2531618_2
+  - fastq-screen=0.14.0=pl5262hdfd78af_1
+  - fontconfig=2.13.1=h6c09931_0
+  - freetype=2.10.4=h5ab3b9f_0
+  - giflib=5.1.4=h14c3975_1
+  - icu=58.2=he6710b0_3
+  - jpeg=9b=h024ee3a_2
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libffi=3.3=he6710b0_2
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libgd=2.2.5=h0db58fd_3
+  - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libtiff=4.1.0=h2733197_1
+  - libuuid=1.0.3=h1bed415_2
+  - libwebp=1.0.1=h8e7db2f_0
+  - libxml2=2.9.10=hb55368b_3
+  - lz4-c=1.9.3=h2531618_0
+  - ncurses=6.2=he6710b0_1
+  - openssl=1.1.1k=h27cfd23_0
+  - perl=5.26.2=h14c3975_0
+  - perl-gd=2.71=pl526he860b03_0
+  - perl-gdgraph=1.54=pl526_0
+  - perl-gdtextutil=0.86=pl526h14c3975_5
+  - pip=21.0.1=py37h06a4308_0
+  - python=3.7.10=hdb3f193_0
+  - readline=8.1=h27cfd23_0
+  - setuptools=52.0.0=py37h06a4308_0
+  - sqlite=3.35.4=hdfb4753_0
+  - tbb=2020.3=hfd86e86_0
+  - tk=8.6.10=hbc83047_0
+  - wheel=0.36.2=pyhd3eb1b0_0
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
+  - zstd=1.4.9=haebb681_0
+prefix: /home/groups/CEDAR/spilioto/tools/anaconda3/envs/fastqscreen

@@ -1,0 +1,25 @@
+name: samtools
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - bzip2=1.0.8=h7b6447c_0
+  - ca-certificates=2020.12.5=ha878542_0
+  - curl=7.71.1=hbc83047_1
+  - htslib=1.9=h4da6232_3
+  - krb5=1.18.2=h173b8e3_0
+  - libcurl=7.71.1=h20c2e04_1
+  - libdeflate=1.2=h516909a_1
+  - libedit=3.1.20191231=h46ee950_2
+  - libgcc=7.2.0=h69d50b8_2
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libssh2=1.9.0=h1ba5d50_1
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - ncurses=6.1=hf484d3e_1002
+  - openssl=1.1.1h=h516909a_0
+  - samtools=1.9=h10a08f8_12
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
+prefix: /home/groups/CEDAR/spilioto/tools/anaconda3/envs/samtools
