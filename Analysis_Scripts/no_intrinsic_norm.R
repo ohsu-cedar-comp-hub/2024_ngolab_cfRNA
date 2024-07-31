@@ -5,7 +5,7 @@ source("paper_figures.R")
 source("classification_functions.R")
 
 #### Load data and meta data ####
-rna_counts = read.csv("pdac_genecount.csv",row.names=1)
+rna_counts = read.csv("pdac_genecount.csv.gz",row.names=1)
 meta = read.csv("pdac_meta.csv")
 
 #Combine islet cell tumor diagnosis with cancer_other
