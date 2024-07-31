@@ -4,7 +4,7 @@ library(magick)
 library(ggpubr)
 library(pROC)
 
-deconvolution_perc_facet = function(meta,dc_list,id_list,names,dir="Figures/",tis_num=5){
+deconvolution_perc_facet = function(meta,dc_list,id_list,names,dir="../Figures/",tis_num=5){
   small_groups = c("Other","PDAC")
   small_colors = c("gray","purple")
   names(small_colors) = small_groups
@@ -30,7 +30,7 @@ deconvolution_perc_facet = function(meta,dc_list,id_list,names,dir="Figures/",ti
   ggsave(paste(dir,"tissue_decon_PDAC_facet.svg",sep=""),plot=p_dc,device="svg",height=6,width=4)
 }
 
-atlas_heat = function(atlas,max_tissues=29,dir="Figures/"){
+atlas_heat = function(atlas,max_tissues=29,dir="../Figures/"){
   #Create z-norm, top expression tissue list
   atlas_norm = atlas - rowMeans(atlas) 
   var = sqrt(apply(atlas_norm,1,var))
@@ -60,7 +60,7 @@ atlas_heat = function(atlas,max_tissues=29,dir="Figures/"){
   ggsave(paste(dir,"tissue_exp_bar.png",sep=""),plot=p_tot,device="png",height=6,width=6)
 }
 
-decon_figure = function(dir="Figures/"){
+decon_figure = function(dir="../Figures/"){
   #Load figures
   p_exp = image_read(paste(dir,"tissue_heatmap_exp.png",sep=""))
   p_exp = image_ggplot(p_exp)
@@ -76,7 +76,7 @@ decon_figure = function(dir="Figures/"){
 }
 
 
-normalization_figure = function(data_raw,int_score,dir="Figures/"){
+normalization_figure = function(data_raw,int_score,dir="../Figures/"){
   p_image = image_read(paste(dir,"figure_3_diagram.png",sep=""))
   p_image = image_ggplot(p_image)
   
@@ -115,7 +115,7 @@ normalization_figure = function(data_raw,int_score,dir="Figures/"){
 
 #Create faceted auc plot for a set of 3 classifiers: P vs B, P vs NC, P vs All
 #Only pass in meta for train (kfold validation) or test (external validation) split
-figure_auc_facet = function(meta,class_list,file_name,group_colors,dir="Figures/",age_cut = 68){
+figure_auc_facet = function(meta,class_list,file_name,group_colors,dir="../Figures/",age_cut = 68){
   #Load PDAC scores
   score_pvb = class_list[[1]][[2]][,"PDAC"]
   score_pvnc = class_list[[2]][[2]][,"PDAC"]
@@ -207,7 +207,7 @@ roc_splits = function(ids_list,labels,values,exp){
 #train_lists = list(list(kfold_ca_PvB,kfold_ca_PvNC,kfold_ca_all),list(kfold_gene_PvB,kfold_gene_PvNC,kfold_gene_all),list(kfold_both_PvB,kfold_both_PvNC,kfold_both_all))
 #test_lists = list(list(class_ca_PvB,class_ca_PvNC,class_ca_all),list(class_gene_PvB,class_gene_PvNC,class_gene_all),list(class_both_PvB,class_both_PvNC,class_both_all))
 #pdac_figure_full_ca19(pdac_meta,train_lists,test_lists,c("CA19-9","Genes","Genes+CA19-9"),"CA19")
-figure_full_ca19 = function(pdac_meta,train_lists,test_lists,g_names,dir="Figures/"){
+figure_full_ca19 = function(pdac_meta,train_lists,test_lists,g_names,dir="../Figures/"){
   test_ids = pdac_meta$Source %in% c("BCC_2019","BCC_2018") & !is.na(pdac_meta$CA19_9)
   train_ids = pdac_meta$Source == "CEDAR_2020" & !is.na(pdac_meta$CA19_9)
   
@@ -330,7 +330,7 @@ figure_ca19 = function(meta,class_list1,class_list2,class_list3,g_names,name){
   return(list(p_ca19,p_group_b,p_roc_b))
 }
 
-figure_survival_plot = function(pdac_metadata,score_list,surv_data_pvb,surv_data_pvnc,surv_data_all,quans,dir="Figures/"){
+figure_survival_plot = function(pdac_metadata,score_list,surv_data_pvb,surv_data_pvnc,surv_data_all,quans,dir="../Figures/"){
   #Create survival plots
   p_surv_pvb_c = survival_single_plot(surv_data_pvb[[1]][[1]],surv_data_pvb[[1]][[2]],quans[1])
   p_surv_pvnc_c = survival_single_plot(surv_data_pvnc[[1]][[1]],surv_data_pvnc[[1]][[2]],quans[2])
@@ -420,7 +420,7 @@ stage_single_boxplot = function(meta,source,score){
 }
 
 
-param_plots = function(param,dir="Figures/"){
+param_plots = function(param,dir="../Figures/"){
   lev_m = c("1","5","10")
   lev_t = c("250","500","1000")
   AUC = param[,5]
@@ -452,7 +452,7 @@ param_plots = function(param,dir="Figures/"){
   ggsave(paste0(dir,"param_boxplots.svg"),plot=p,device="svg",height=4,width=6)
 }
 
-biomaker_expression = function(data,genes,meta,group_levels,rows=5,cols=8,dir="Figures/"){
+biomaker_expression = function(data,genes,meta,group_levels,rows=5,cols=8,dir="../Figures/"){
   bcc = meta$Source == "BCC_2018" | meta$Source == "BCC_2019"
   cedar = meta$Source == "CEDAR_2020"
   
@@ -479,7 +479,7 @@ biomaker_expression = function(data,genes,meta,group_levels,rows=5,cols=8,dir="F
   ggsave(paste0(dir,"expression_cedar.svg"),plot=p_c,device="svg",height=10,width=15)
 }
 
-age_gender_correlation = function(score_list,meta,dir="Figures/"){
+age_gender_correlation = function(score_list,meta,dir="../Figures/"){
   meta = meta[meta$Group!="PDAC" & meta$Gender.Flag %in% c("M","F"),]
   exp_labels = c("PDAC vs Benign","PDAC vs Non-Cancer","PDAC vs All")
   df = rbind(cbind(score_list[[1]][names(score_list[[1]]) %in% meta$SeqID],meta$Age.at.Collection[meta$SeqID %in% names(score_list[[1]])],meta$Gender.Flag[meta$SeqID %in% names(score_list[[1]])],exp_labels[1]),

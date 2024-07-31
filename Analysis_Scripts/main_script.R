@@ -7,7 +7,7 @@ source("classification_functions.R")
 source("survival.R")
 
 #### Load data and meta data ####
-rna_counts = read.csv("pdac_genecount.csv",row.names=1)
+rna_counts = read.csv("pdac_genecount.csv.gz",row.names=1)
 meta = read.csv("pdac_meta.csv")
 
 #Combine islet cell tumor diagnosis with cancer_other
@@ -55,7 +55,7 @@ DE_genes = DE[DE[,"FDR"]<.05,1]
 
 
 #### Deconvolution analysis of selected geneset ####
-atlas = read.csv("Tissue_RNA_Atlas.csv",row.names=1)
+atlas = read.csv("Tissue_RNA_Atlas.csv.gz",row.names=1)
 #set minimum expression to 1, for deconvolution stability
 atlas[atlas < 1] = 1
 genes = DE_genes[DE_genes %in% row.names(atlas)]
@@ -147,7 +147,7 @@ survival_pvb = survival_analysis(scores_pvb,survival_data,"PDAC vs Benign",quans
 #normalization figure
 normalization_figure(rna_counts,intrinsic_genes)
 #deconvolution panels
-deconvolution_perc_facet(meta,dc_list,list(ids_all,ids_noLivMet,ids_stage12),c("All Samples","No Liver Met","Stage 1 & 2"),dir="Figures/",tis_num=5)
+deconvolution_perc_facet(meta,dc_list,list(ids_all,ids_noLivMet,ids_stage12),c("All Samples","No Liver Met","Stage 1 & 2"),dir="../Figures/",tis_num=5)
 atlas_heat(atlas)
 #assemble into one figure
 decon_figure()
