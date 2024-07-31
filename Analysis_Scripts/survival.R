@@ -3,8 +3,8 @@ survival_analysis = function(scores,survival_data,name,quan){
   survival = adjust_survival_score(survival_data,scores)
   
   #Create dataframes for survival plots 
-  surv_data_c = make_survival_frame(survival,"CEDAR_2020",quan,name)
-  surv_data_b = make_survival_frame(survival,"BCC_2019",quan,name)
+  surv_data_c = make_survival_frame(survival,"CEDAR",quan,name)
+  surv_data_b = make_survival_frame(survival,"BCC",quan,name)
 
   return(list(surv_data_c,surv_data_b))
 }
@@ -17,7 +17,7 @@ adjust_survival_score = function(survival,scores){
 }
 
 make_survival_frame = function(input_dataset,filter_source,quan,group){
-  filtered_survival <- input_dataset[input_dataset$Source==filter_source,]
+  filtered_survival <- input_dataset[input_dataset$Cohort==filter_source,]
   surv_object <- Surv(time =filtered_survival$Followup.Duration..mon., event = filtered_survival$Outcome..NED..AWD..DOD== "DOD")
   Y <- surv_object
   

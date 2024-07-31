@@ -208,8 +208,8 @@ roc_splits = function(ids_list,labels,values,exp){
 #test_lists = list(list(class_ca_PvB,class_ca_PvNC,class_ca_all),list(class_gene_PvB,class_gene_PvNC,class_gene_all),list(class_both_PvB,class_both_PvNC,class_both_all))
 #pdac_figure_full_ca19(pdac_meta,train_lists,test_lists,c("CA19-9","Genes","Genes+CA19-9"),"CA19")
 figure_full_ca19 = function(pdac_meta,train_lists,test_lists,g_names,dir="../Figures/"){
-  test_ids = pdac_meta$Source %in% c("BCC_2019","BCC_2018") & !is.na(pdac_meta$CA19_9)
-  train_ids = pdac_meta$Source == "CEDAR_2020" & !is.na(pdac_meta$CA19_9)
+  test_ids = pdac_meta$Cohort == "BCC" & !is.na(pdac_meta$CA19_9)
+  train_ids = pdac_meta$Cohort == "CEDAR" & !is.na(pdac_meta$CA19_9)
   
   train_plots = figure_ca19(pdac_meta[train_ids,],train_lists[[1]],train_lists[[2]],train_lists[[3]],g_names,"CA19_9_train")
   test_plots = figure_ca19(pdac_meta[test_ids,],test_lists[[1]],test_lists[[2]],test_lists[[3]],g_names,"CA19_9_test")
@@ -341,12 +341,12 @@ figure_survival_plot = function(pdac_metadata,score_list,surv_data_pvb,surv_data
   
   
   #Boxplots for stages
-  p_box_pvb_c = stage_single_boxplot(pdac_metadata,"CEDAR_2020",score_list[[1]])
-  p_box_pvnc_c = stage_single_boxplot(pdac_metadata,"CEDAR_2020",score_list[[2]])
-  p_box_all_c = stage_single_boxplot(pdac_metadata,"CEDAR_2020",score_list[[3]])
-  p_box_pvb_b = stage_single_boxplot(pdac_metadata,"BCC_2019",score_list[[1]])
-  p_box_pvnc_b = stage_single_boxplot(pdac_metadata,"BCC_2019",score_list[[2]])
-  p_box_all_b = stage_single_boxplot(pdac_metadata,"BCC_2019",score_list[[3]])
+  p_box_pvb_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[1]])
+  p_box_pvnc_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[2]])
+  p_box_all_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[3]])
+  p_box_pvb_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[1]])
+  p_box_pvnc_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[2]])
+  p_box_all_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[3]])
   
   
   #Arrange columns for final figures
@@ -396,7 +396,7 @@ stage_single_boxplot = function(meta,source,score){
   ids = match(names(score),meta$SeqID)
   meta = meta[ids,]
   
-  all = meta$Source==source
+  all = meta$Cohort==source
   
   ##### Make stage boxplot column #####
   stage_levels = c("Benign","1-2","3-4")
@@ -453,8 +453,8 @@ param_plots = function(param,dir="../Figures/"){
 }
 
 biomaker_expression = function(data,genes,meta,group_levels,rows=5,cols=8,dir="../Figures/"){
-  bcc = meta$Source == "BCC_2018" | meta$Source == "BCC_2019"
-  cedar = meta$Source == "CEDAR_2020"
+  bcc = meta$Cohort == "BCC"
+  cedar = meta$Cohort == "CEDAR"
   
   b_markers = list()
   c_markers = list()

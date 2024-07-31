@@ -12,7 +12,6 @@ meta = read.csv("pdac_meta.csv")
 meta$Group[meta$Group=="Islet Cell Tumor"] = "Other Cancer"
 meta$Group[meta$Group=="Cancer_other"] = "Other Cancer"
 meta$Group[meta$Group=="Benign Pancreas"] = "Benign"
-meta$Source[meta$Source=="BCC_2018"] = "BCC_2019"
 
 #Set color schemes
 group_colors = c("forestgreen","blue","gold","purple","red")
@@ -23,8 +22,8 @@ names(group_colors) = group_levels
 ids_B_vs_P = meta$Group %in% c("Benign","PDAC")                 #Benign and PDAC samples
 ids_NC_vs_P = meta$Group != "Other Cancer"                      #PDAC and other non-cancer samples
 ids_all = rep(TRUE,nrow(meta))                                  #All samples
-ids_train = meta$Source=="CEDAR_2020"
-ids_val = meta$Source == "BCC_2019"
+ids_train = meta$Cohort=="CEDAR"
+ids_val = meta$Cohort == "BCC"
 
 #### Perform normalization ####
 rna_counts_tpm = tpm(rna_counts)

@@ -14,7 +14,6 @@ meta = read.csv("pdac_meta.csv")
 meta$Group[meta$Group=="Islet Cell Tumor"] = "Other Cancer"
 meta$Group[meta$Group=="Cancer_other"] = "Other Cancer"
 meta$Group[meta$Group=="Benign Pancreas"] = "Benign"
-meta$Source[meta$Source=="BCC_2018"] = "BCC_2019"
 
 #Set color schemes
 group_colors = c("forestgreen","blue","gold","purple","red")
@@ -30,8 +29,8 @@ ids_stage12 = !meta$Stage %in% c(3,4) | meta$Group!="PDAC"      #All samples wit
 ids_stage34 = !meta$Stage %in% c(1,2) | meta$Group!="PDAC"      #All samples without stage 1-2 PDAC
 ids_male = meta$Gender.Flag == "M"
 ids_ca19 = !is.na(meta$CA19_9)                                  #Samples that have CA 19-9 biomarker measurements
-ids_train = meta$Source=="CEDAR_2020"
-ids_val = meta$Source == "BCC_2019"
+ids_train = meta$Cohort=="CEDAR"
+ids_val = meta$Cohort == "BCC"
 
 #### Perform intrinsic gene normalization + TMM ####
 intrinsic_genes = read.csv("Intrinsic_score.csv")
@@ -133,7 +132,6 @@ val_DEca19_all = res[[6]]
 #### Survival Analysis ####
 quans = c(.5,.5,.5)
 survival_data = read.csv("PDAC_survival.csv")
-survival_data$Source[ survival_data$Source == "BCC_2018"] = "BCC_2019"
 scores_all = c(kfold_all[[2]][,"PDAC"],val_all[[2]][,"PDAC"])
 scores_pvnc = c(kfold_nc_vs_p[[2]][,"PDAC"],val_nc_vs_p[[2]][,"PDAC"])
 scores_pvb = c(kfold_b_vs_p[[2]][,"PDAC"],val_b_vs_p[[2]][,"PDAC"])
