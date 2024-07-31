@@ -1,0 +1,249 @@
+SeqID,Cohort,Age.at.Collection,Gender.Flag,Race,Group,Pancreatitis_type,Stage,Grade,Met_Site,Outcome..NED..AWD..DOD,CA19_9
+PCX1,CEDAR,73,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,17.4
+PCX2,CEDAR,83,M,white,PDAC,n/a,1,2,none,NED,162.8
+PCX3,CEDAR,71,M,white-hisp,Cancer_other,n/a,n/a,n/a,n/a,NED,1074.2
+PCX4,CEDAR,79,M,white,PDAC,n/a,3,2,No,NED,32.2
+PCX5,CEDAR,63,M,white,PDAC,n/a,2,2,lymph nodes,NED,91.2
+PCX6,CEDAR,68,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,44
+PCX7,CEDAR,49,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8.2
+PCX9,CEDAR,43,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,47.6
+PCX10,CEDAR,69,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,39.8
+PCX11,CEDAR,83,M,white,IPMN,n/a,n/a,1,n/a,AWD,59.3
+PCX12,CEDAR,55,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,7.5
+PCX13,CEDAR,46,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,Deceased Not Related ,107.5
+PCX14,CEDAR,67,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PCX15,CEDAR,59,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,71.3
+PCX16,CEDAR,63,F,white,IPMN,n/a,n/a,1,n/a,AWD,21
+PCX17,CEDAR,62,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,5.7
+PCX18,CEDAR,72,M,white,PDAC,n/a,4,2,liver,DOD,989.6
+PCX19,CEDAR,54,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,32.1
+PCX20,CEDAR,67,F,white,IPMN,n/a,n/a,1,n/a,AWD,0.01
+PCX21,CEDAR,46,M,black,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.9
+PCX22,CEDAR,62,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,0.01
+PCX23,CEDAR,28,M/F @ birth,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,6.5
+PCX24,CEDAR,46,F,black,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,9.4
+PCX25,CEDAR,73,F,white,Cancer_other,n/a,n/a,1,n/a,AWD,21.1
+PCX26,CEDAR,45,F,asian,Benign Pancreas,n/a,n/a,n/a,n/a,NED,11.4
+PCX27,CEDAR,62,F,white,IPMN,n/a,n/a,1,n/a,AWD,0.01
+PCX28,CEDAR,34,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,3.9
+PCX29,CEDAR,71,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,6.3
+PCX30,CEDAR,77,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,7.5
+PCX31,CEDAR,68,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,4.1
+PCX32,CEDAR,71,F,white,PDAC,n/a,3,2,lymph nodes,DOD,11.1
+PCX33,CEDAR,57,F,white-hisp,Islet Cell Tumor,n/a,1,1,No,NED,29.2
+PCX34,CEDAR,59,M,white,PDAC,n/a,1,2,No,NED,13.1
+PCX35,CEDAR,69,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,6
+PCX36,CEDAR,67,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,1
+PCX37,CEDAR,45,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,42.4
+PCX38,CEDAR,55,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,18
+PCX39,CEDAR,72,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,3.1
+PCX40,CEDAR,40,M,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,5.5
+PCX41,CEDAR,71,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,14.4
+PCX42,CEDAR,56,M,white-hisp,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,26.1
+PCX43,CEDAR,52,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,17.9
+PCX44,CEDAR,69,M,white,IPMN,n/a,n/a,1,n/a,AWD,28.2
+PCX45,CEDAR,30,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.6
+PCX46,CEDAR,66,M,white,IPMN,n/a,1,3,n/a,AWD,127.9
+PCX47,CEDAR,71,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,Deceased not related,13.3
+PCX48,CEDAR,72,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,26.8
+PCX49,CEDAR,30,F,white-hisp,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8.4
+PCX50,CEDAR,67,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,0.01
+PCX51,CEDAR,29,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,9.1
+PCX52,CEDAR,66,F,white,IPMN,n/a,n/a,1,n/a,AWD,21.3
+PCX53,CEDAR,65,F,white,Islet Cell Tumor,n/a,1,1,No,NED,20
+PCX54,CEDAR,74,F,white,IPMN,n/a,n/a,1,n/a,AWD,5.4
+PCX55,CEDAR,63,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,9.5
+PCX57,CEDAR,77,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,10.5
+PCX58,CEDAR,52,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,66.3
+PCX59,CEDAR,69,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,13.2
+PCX60,CEDAR,44,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,2.2
+PCX61,CEDAR,53,F,white,Cancer_other,n/a,n/a,n/a,n/a,NED,14.4
+PCX62,CEDAR,55,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,27.5
+PCX63,CEDAR,72,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,18.6
+PCX64,CEDAR,82,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,9.4
+PCX65,CEDAR,49,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX66,CEDAR,71,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8
+PCX67,CEDAR,67,M,white,IPMN,n/a,1,1,n/a,AWD,108.2
+PCX68,CEDAR,25,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,13.9
+PCX69,CEDAR,71,M,mixed,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,21.7
+PCX70,CEDAR,74,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8.8
+PCX71,CEDAR,41,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,9.5
+PCX72,CEDAR,80,M,white,PDAC,n/a,4,3,distant lymph node,DOD,316.8
+PCX73,CEDAR,64,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,6.5
+PCX74,CEDAR,70,M,white,PDAC,n/a,4,2,not reported,AWD,780.8
+PCX75,CEDAR,25,M,black,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,35.4
+PCX76,CEDAR,27,F,Am Indian,Cancer_other,n/a,1,1,No,NED,7.3
+PCX77,CEDAR,57,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,0.01
+PCX78,CEDAR,66,M,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,6.4
+PCX79,CEDAR,72,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,12.4
+PCX80,CEDAR,54,F,Polynesian,Cancer_other,n/a,n/a,n/a,n/a,AWD,NA
+PCX81,CEDAR,45,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,17.9
+PCX82,CEDAR,56,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,7.8
+PCX83,CEDAR,69,M,black,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,0.01
+PCX84,CEDAR,67,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,7
+PCX85,CEDAR,39,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,0.01
+PCX86,CEDAR,68,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,9.1
+PCX87,CEDAR,53,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,112.4
+PCX88,CEDAR,73,M,white,PDAC,n/a,1,2,none,NED,NA
+PCX89,CEDAR,26,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,0.01
+PCX90,CEDAR,47,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,5.6
+PCX91,CEDAR,80,F,white,IPMN,n/a,n/a,1,n/a,NED,NA
+PCX92,CEDAR,44,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX93,CEDAR,61,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX94,CEDAR,50,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX95,CEDAR,45,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX96,CEDAR,45,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,7.5
+PCX97,CEDAR,50,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX98,CEDAR,67,F,white,IPMN,n/a,n/a,1,n/a,AWD,NA
+PCX99,CEDAR,72,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,Deceased not related,NA
+PCX100,CEDAR,58,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX101,CEDAR,50,M,white,PDAC,n/a,2,2,none,NED,NA
+PCX102,CEDAR,70,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX103,CEDAR,45,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX104,CEDAR,43,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX105,CEDAR,69,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX106,CEDAR,69,M,white-hisp,PDAC,n/a,3,2,no,DOD,NA
+PCX107,CEDAR,64,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX108,CEDAR,73,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX109,CEDAR,38,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX110,CEDAR,66,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX111,CEDAR,47,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,12.6
+PCX112,CEDAR,67,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,8.9
+PCX113,CEDAR,62,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,7.3
+PCX114,CEDAR,41,M,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,9.5
+PCX115,CEDAR,58,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,10.5
+PCX116,CEDAR,58,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,4.3
+PCX117,CEDAR,54,F,Asian,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,36.6
+PCX118,CEDAR,72,M,white,PDAC,n/a,4,2,liver,AWD,11
+PCX119,CEDAR,42,M,white,Cancer_other,n/a,n/a,n/a,n/a,NED,4
+PCX120,CEDAR,45,M,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,11.6
+PCX121,CEDAR,60,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PCX122,CEDAR,40,M,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,8.4
+PCX123,CEDAR,66,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,8.5
+PCX124,CEDAR,81,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,7.5
+PCX125,CEDAR,54,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,6.3
+PCX126,CEDAR,32,F,white,IPMN,n/a,n/a,1,n/a,NED,5.9
+PCX127,CEDAR,41,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,20.5
+PCX128,CEDAR,60,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,8.6
+PCX129,CEDAR,73,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,49
+PCX130,CEDAR,58,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,NA
+PCX131,CEDAR,68,M,black,PDAC,n/a,1,2,none,NED,110.3
+PCX132,CEDAR,70,F,white,IPMN,n/a,n/a,1,n/a,AWD,6.1
+PCX133,CEDAR,62,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,15.6
+PCX134,CEDAR,51,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,23.8
+PCX135,CEDAR,69,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,25.2
+PCX136,CEDAR,58,M,black,Benign Pancreas,n/a,n/a,n/a,n/a,NED,NA
+PCX137,CEDAR,64,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.8
+PCX138,CEDAR,72,F,white,IPMN,n/a,,1,,NED,8
+PCX139,CEDAR,65,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,66.6
+PCX140,CEDAR,47,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8.4
+PCX141,CEDAR,62,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,2.4
+PCX142,CEDAR,41,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.8
+PCX143,CEDAR,65,F,white,IPMN,n/a,n/a,1,n/a,AWD,12
+PCX144,CEDAR,39,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,5.7
+PCX145,CEDAR,79,M,white,PDAC,n/a,3,2,none,AWD,98
+PCX146,CEDAR,66,M,white,PDAC,n/a,3,2,lymph nodes,DOD,329.1
+PCX147,CEDAR,76,M,white,PDAC,n/a,4,2,liver,DOD,25
+PCX148,CEDAR,82,M,white,IPMN,n/a,n/a,1,n/a,AWD,19.5
+PCX149,CEDAR,47,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,19.7
+PCX150,CEDAR,61,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,2.3
+PCX151,CEDAR,69,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,15.1
+PCX152,CEDAR,71,M,white,PDAC,n/a,1,2,none,NED,19
+PCX153,CEDAR,45,F,white,Islet Cell Tumor,n/a,1,1,No,NED,2.7
+PCX154,CEDAR,61,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PCX155,CEDAR,40,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,2.4
+PCX156,BCC,65,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,8
+PCX157,BCC,75,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PCX158,BCC,79,M,white,PDAC,n/a,3,3,lymph nodes,DOD,100.9
+PCX159,BCC,75,M,white,PDAC,n/a,3,2,lymph nodes,DOD,93.4
+PCX160,BCC,70,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,66.6
+PCX161,BCC,86,F,white,Islet Cell Tumor,n/a,2,2,lymph nodes,Deceased Not Related,36.1
+PCX162,BCC,39,F,white,Islet Cell Tumor,n/a,1,2,No,NED,0.01
+PCX163,BCC,85,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,5.3
+PCX164,BCC,75,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,17.6
+PCX165,BCC,66,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,31.2
+PCX166,BCC,57,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,55.9
+PCX167,BCC,70,M,white,Cancer_other,n/a,n/a,n/a,n/a,DOD,106.8
+PCX168,BCC,55,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,14.3
+PCX169,BCC,71,M,white-hisp,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,798.4
+PCX170,BCC,75,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,17.6
+PCX171,BCC,71,M,white,PDAC,n/a,1,2,none,AWD,54.1
+PCX172,BCC,76,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,33.6
+PCX173,BCC,49,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,10.3
+PCX174,BCC,76,M,white,Islet Cell Tumor,n/a,1,2,No,NED,37.7
+PCX175,BCC,75,M,white,Cancer_other,n/a,n/a,n/a,n/a,DOD (cholangio),454
+PCX176,BCC,51,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,5.9
+PCX177,BCC,47,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,54.8
+PCX178,BCC,62,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,12.7
+PCX179,BCC,56,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,8.4
+PCX180,BCC,72,M,white,PDAC,n/a,1,2,none,AWD,1005.5
+PCX181,BCC,80,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,7.3
+PCX182,BCC,51,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,12.1
+PCX183,BCC,75,M,white,Islet Cell Tumor,n/a,4,2,liver,AWD,16.2
+PCX184,BCC,42,F,white,IPMN,n/a,1,1,n/a,NED,NA
+PCX186,BCC,81,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,4.9
+PCX187,BCC,78,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,6.7
+PCX188,BCC,56,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,4
+PCX189,BCC,62,F,white,Islet Cell Tumor,n/a,1,1,none,NED,14.3
+PCX190,BCC,64,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,13.4
+PCX191,BCC,44,F,black,Benign Pancreas,n/a,n/a,n/a,n/a,,0.01
+PCX192,BCC,57,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,83.4
+PCX193,BCC,55,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,3.1
+PCX194,BCC,34,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,7.3
+PCX195,BCC,67,F,white,IPMN,n/a,n/a,n/a,n/a,NED,13.4
+PCX196,BCC,75,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,16.1
+PCX197,BCC,67,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,26.1
+PCX198,BCC,77,F,white,IPMN,n/a,,1,,NED,13.7
+PCX199,BCC,40,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,Deceased Not Related,59.4
+PCX200,BCC,79,M,white,Cancer_other,n/a,n/a,n/a,n/a,AWD,3.5
+PCX201,BCC,75,M,white,PDAC,n/a,3,2,not reported,AWD,NA
+PCX202,BCC,80,F,white,IPMN,n/a,n/a,1,n/a,AWD,46.1
+PCX203,BCC,58,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,7
+PCX205,BCC,71,M,white,PDAC,n/a,3,2,not reported,DOD,37.4
+PCX206,BCC,50,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,2.6
+PCX207,BCC,76,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PCX208,BCC,76,M,white,PDAC,n/a,1,2,none,AWD,6.2
+PCX209,BCC,61,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,18.8
+PCX210,BCC,77,F,white,Cancer_other,n/a,n/a,n/a,n/a,DOD,92.5
+PCX211,BCC,70,F,white,Islet Cell Tumor,n/a,4,2,liver,AWD,20.5
+PCX212,BCC,57,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,11
+PCX213,BCC,67,F,white,PDAC,n/a,4,2,Adnexa,DOD,19.6
+PCX214,BCC,45,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,14
+PCX215,BCC,65,F,white,Cancer_other,n/a,n/a,n/a,n/a,DOD,NA
+PCX216,BCC,62,M,white,PDAC,n/a,4,2,lymph nodes,AWD,719.2
+PP209,BCC,49,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4
+PP210,BCC,50,M,white,IPMN,n/a,,1,,NED,3.7
+PP211,BCC,85,M,Asian,PDAC,n/a,2,2,none,DOD,56.3
+PP212,BCC,55,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,6
+PP213,BCC,44,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,15.4
+PP214,BCC,62,M,white,PDAC,n/a,3,1,lymph nodes,DOD,228.9
+PP215,BCC,44,F,white,IPMN,n/a,n/a,1,n/a,NED,9.2
+PP216,BCC,68,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,10
+PP217,BCC,53,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,0.01
+PP218,BCC,52,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,3.9
+PP219,BCC,40,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,153.4
+PP220,BCC,79,F,white,IPMN,n/a,n/a,1,n/a,AWD,0.01
+PP221,BCC,72,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,21
+PP222,BCC,54,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,3.1
+PP223,BCC,78,F,white,Pancreatitis,Acute Pancreatitis,n/a,n/a,n/a,NED,4.5
+PP224,BCC,77,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,17.1
+PP225,BCC,68,M,white,PDAC,n/a,1,2,np,AWD,0.01
+PP226,BCC,74,F,white,IPMN,n/a,n/a,1,n/a,AWD,5.2
+PP227,BCC,49,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,3.6
+PP228,BCC,66,F,white,PDAC,n/a,2,2,none,DOD,NA
+PP229,BCC,66,M,white,IPMN,n/a,n/a,3,n/a,NED,19
+PP230,BCC,83,M,white,IPMN,n/a,n/a,1,n/a,AWD,72.4
+PP231,BCC,30,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,2.9
+PP232,BCC,71,M,white,PDAC,n/a,2,2,none,AWD,NA
+PP233,BCC,59,M,white,PDAC,n/a,3,2,lymph nodes,DOD,2044
+PP234,BCC,60,F,white,IPMN,n/a,n/a,1,n/a,AWD,4.3
+PP235,BCC,84,M,white,Cancer_other,n/a,n/a,1,n/a,AWD,17.2
+PP236,BCC,58,M,white,PDAC,n/a,4,2,liver,DOD,NA
+PP237,BCC,73,F,white,PDAC,n/a,3,2,lymph nodes,DOD,724.7
+PP238,BCC,82,F,white,PDAC,n/a,3,3,lymph nodes,DOD,20.4
+PP239,BCC,84,M,white,PDAC,n/a,3,2,none,DOD,NA
+PP240,BCC,70,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,17.6
+PP241,BCC,54,M,white,Benign Pancreas,n/a,n/a,n/a,n/a,DOD,42.9
+PP242,BCC,62,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,9.4
+PP243,BCC,42,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.1
+PP244,BCC,64,F,white,Benign Pancreas,n/a,n/a,n/a,n/a,NED,2.4
