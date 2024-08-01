@@ -116,7 +116,7 @@ ggplot(percent_long_counts, aes(x=group, y=total_counts, fill=biotype, color=bio
 #write percent biotype table
 summarized_percent_biotype <- percent_long_counts %>% group_by(biotype) %>%
   summarize(minimum=min(total_counts), mean=mean(total_counts), maximum=max(total_counts))
-write.table(summarized_percent_biotype, file="~/OneDrive - Oregon Health & Science University/PDAC_paper_scripts/PDAC_biotype_information_table.txt")
+write.table(summarized_percent_biotype, file="./PDAC_biotype_information_table.txt")
 
 ###################################
 ##Saturation Curves
