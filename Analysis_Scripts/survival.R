@@ -35,5 +35,8 @@ make_survival_frame = function(input_dataset,filter_source,quan,group){
   surv_data = cbind(c(1,kmfit$surv[1:n1]),c(0,kmfit$time[1:n1]),paste0("Score < ",100*quan,"th percentile"),group )
   surv_data = rbind(surv_data,cbind(c(1,kmfit$surv[(n1+1):n2]),c(0,kmfit$time[(n1+1):n2]),paste0("Score > ",100*quan,"th percentile"),group))
   
-  return(list(surv_data,pval))
+
+  return(list(surv_data, pval, Y, filtered_survival))
 }
+
+  
