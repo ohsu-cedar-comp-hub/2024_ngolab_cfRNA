@@ -3,6 +3,24 @@ library(ggplot2)
 library(magick)
 library(ggpubr)
 library(pROC)
+library(survminer)
+
+de_volcano_plot = function(DE,counts,meta,dir="../Figures/"){
+  de_ids = DE$FDR < .05
+  colors = c("black","red")
+  names(colors) = c(FALSE,TRUE)
+  p=ggplot()+
+          geom_point(data=data.frame(x=as.numeric(DE$LogFC),y= -log2(as.numeric(DE$FDR)),sig=de_ids),aes(x=x,y=y,color=sig),show.legend = FALSE) + 
+          geom_abline(intercept = -log2(.05),slope=0,color="red")+
+          geom_text(data=data.frame(x=as.numeric(DE$LogFC[de_ids]),y= -log2(as.numeric(DE$FDR[de_ids]))+.1,Gene=DE$genes[de_ids]),
+                     aes(x=x,y=y,label=Gene),check_overlap = TRUE,hjust=.5,size=4)+
+          xlab("Log2 FC PDAC vs Not-PDAC")+ylab("-Log2(FDR)")+scale_color_manual(values=colors)+
+          theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))
+  
+  
+  
+  ggsave(paste(dir,"DE_volcano.svg",sep=""),plot=p,device="svg",height=8,width=10)
+}
 
 deconvolution_perc_facet = function(meta,dc_list,id_list,names,dir="../Figures/",tis_num=5){
   small_groups = c("Other","PDAC")
@@ -22,15 +40,16 @@ deconvolution_perc_facet = function(meta,dc_list,id_list,names,dir="../Figures/"
   #Create faceted barplot
   p_dc = ggplot(data.frame(Tissue=factor(D[,1],levels=tis_names),Exp=as.numeric(D[,2]),Group=factor(D[,3],levels=small_groups),split=factor(D[,4],levels=names)),
                 aes(x=Tissue,y=Exp,fill=Group))+facet_grid(rows=vars(split))+
-    geom_bar(position="fill",stat="identity")+xlab("")+ylab("Relative Expression")+
+    geom_bar(position="fill",stat="identity")+xlab("")+ylab("Relative Contribution")+
     geom_hline(yintercept = .5,linetype="dashed")+scale_fill_manual(values = small_colors)+
     theme(axis.text.x = element_text(angle=35,size=10,vjust=1,hjust=1))+ggtitle("")+
     theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))
   
-  ggsave(paste(dir,"tissue_decon_PDAC_facet.svg",sep=""),plot=p_dc,device="svg",height=6,width=4)
+  return(p_dc)
 }
 
 atlas_heat = function(atlas,max_tissues=29,dir="../Figures/"){
+  library(ComplexHeatmap)
   #Create z-norm, top expression tissue list
   atlas_norm = atlas - rowMeans(atlas) 
   var = sqrt(apply(atlas_norm,1,var))
@@ -46,68 +65,64 @@ atlas_heat = function(atlas,max_tissues=29,dir="../Figures/"){
   
   #heatmap of tissue enrichment for each gene
   tot_enr = data.frame("Total" = colSums(atlas_norm))
-  p_enr = pheatmap(t(atlas_norm),cluster_rows = FALSE,cluster_cols = TRUE,main = "Tissue Expression (Z-score)",annotation_row = tot_enr,annotation_legend = FALSE)
+  #p_enr = pheatmap(t(atlas_norm),cluster_rows = FALSE,cluster_cols = TRUE,main = "Tissue Expression (Z-score)",annotation_row = tot_enr,annotation_legend = FALSE)
+  h_anno = rowAnnotation(Total=anno_barplot(tot_enr,axis_param = list(direction = "reverse"),
+                         axis=FALSE,border=FALSE),show_legend=FALSE)
+  p_enr = Heatmap(t(atlas_norm),cluster_rows = FALSE,cluster_columns = TRUE,left_annotation = h_anno,name="Z-score")
+  p_enr = grid.grabExpr(draw(p_enr,column_title="Tissue Expression"))
   
   p_tot = ggplot(data.frame(val=tot_enr[,1],gene=factor(colnames(atlas_norm),levels=rev(colnames(atlas_norm)))),aes(x=val,y=gene))+
     geom_bar(stat="identity",color="gray",width=1)+xlab("")+ylab("")+
     theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="white"))
-  #theme(axis.text.x = element_blank(),axis.ticks.x = element_blank())+
-  #theme(axis.text.y = element_blank(),axis.ticks.y = element_blank())
-  
-  #arrange plots
-  #p = ggarrange(p_enr,p_q,nrow=2,heights = c(1,.25))
-  ggsave(paste(dir,"tissue_heatmap_exp.png",sep=""),plot=p_enr,device="png",height=6,width=6)
-  ggsave(paste(dir,"tissue_exp_bar.png",sep=""),plot=p_tot,device="png",height=6,width=6)
+ 
+  return(p_enr)
 }
 
-decon_figure = function(dir="../Figures/"){
-  #Load figures
-  p_exp = image_read(paste(dir,"tissue_heatmap_exp.png",sep=""))
-  p_exp = image_ggplot(p_exp)
-  p_tdp = image_read(paste(dir,"tissue_decon_PDAC_facet.png",sep=""))
-  p_tdp = image_ggplot(p_tdp)
-  
-  
+decon_figure = function(p_exp,p_tdp,dir="../Figures/"){
   #compile together
   p = ggarrange(p_exp,p_tdp,nrow=1,labels=c("a","b"),widths=c(3,2))
   
   #save figure
-  ggsave(paste0(dir,"biomarker_source.svg"),plot=p,device="svg",heigh=6,width=10)
+  ggsave(paste0(dir,"biomarker_source.svg"),plot=p,device="svg",heigh=6,width=11)
+}
+
+decon_figure_split = function(p_train,p_val,dir="../Figures/"){
+  #compile together
+  p = ggarrange(p_train,p_val,nrow=1,labels=c("a","b"),widths=c(1,1),common.legend = TRUE,legend = "right")
+  
+  #save figure
+  ggsave(paste0(dir,"decon_split.svg"),plot=p,device="svg",heigh=6,width=10)
 }
 
 
-normalization_figure = function(data_raw,int_score,dir="../Figures/"){
+normalization_figure = function(data_raw,intrinsic_genes,dir="../Figures/"){
   p_image = image_read(paste(dir,"figure_3_diagram.png",sep=""))
   p_image = image_ggplot(p_image)
   
-  #Select top k genes by score
-  k=1000
-  int_genes = int_score[1:100,1]
-  bat_genes = int_score[nrow(int_score):(nrow(int_score)-k),1]
+  data_raw = data_raw
+  int_score = intrinsic_genes$Intrinsic
+  bat_score = intrinsic_genes$Extrinsic
   
-  data_int = t(t(data_raw)/colSums(data_raw[int_genes,])) * mean(colSums(data_raw[int_genes,]))
-  data_tmm = tmm(intrinsic_norm(data_raw,int_genes))
+  data_int = cf_norm(data_raw,intrinsic_genes)
+  data_tmm = tmm(cf_norm(data_raw,intrinsic_genes))
   p = ncol(data_raw)
   
-  norm_levels = c("Raw Reads","Intrinsic Norm","Intrinsic Norm + TMM")
+  norm_levels = c("Raw Reads","cf-Normalization","cf-Normalization + TMM")
   
   Data = c()
-  Data = rbind(Data,cbind(1:p,log(colSums(data_raw[int_genes,])+1),"Intrinsic",norm_levels[1]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_raw[bat_genes,])+1),"Batch",norm_levels[1]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_raw)),"All",norm_levels[1]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_int[int_genes,])+1),"Intrinsic",norm_levels[2]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_int[bat_genes,])+1),"Batch",norm_levels[2]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_int)),"All",norm_levels[2]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_tmm[int_genes,])+1),"Intrinsic",norm_levels[3]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_tmm[bat_genes,])+1),"Batch",norm_levels[3]))
-  Data = rbind(Data,cbind(1:p,log(colSums(data_tmm)),"All",norm_levels[3]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_raw*int_score)+1),"Intrinsic",norm_levels[1]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_raw*bat_score)+1),"Extrinsic",norm_levels[1]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_int*int_score)+1),"Intrinsic",norm_levels[2]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_int*bat_score)+1),"Extrinsic",norm_levels[2]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_tmm*int_score)+1),"Intrinsic",norm_levels[3]))
+  Data = rbind(Data,cbind(1:p,(colSums(data_tmm*bat_score)+1),"Extrinsic",norm_levels[3]))
   
-  colors = c("skyblue","olivedrab3","goldenrod1")
-  names(colors) = c("All","Intrinsic","Batch")
+  colors = c("olivedrab3","goldenrod1")
+  names(colors) = c("Intrinsic","Extrinsic")
   
-  p_norms = ggplot(data.frame(Genes=factor(Data[,3],levels=names(colors)),vals=as.numeric(Data[,2]),Sample=as.numeric(Data[,1]),Norm=factor(Data[,4],levels=norm_levels)),aes(color=Genes,x=Sample,y=vals))+
-    geom_line()+xlab("Sample")+ylab("Log Total Expression")+facet_grid(cols=vars(Norm))+theme(axis.text.x = element_blank(),axis.ticks.x = element_blank())+
-    theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))+scale_color_manual(values=colors)
+  p_norms = ggplot(data.frame(Contribution=factor(Data[,3],levels=names(colors)),vals=as.numeric(Data[,2]),Sample=as.numeric(Data[,1]),Norm=factor(Data[,4],levels=norm_levels)),aes(color=Contribution,x=Sample,y=vals,fill=Contribution))+
+    geom_bar(position="stack", stat="identity")+xlab("Sample")+ylab("Total Counts")+facet_grid(cols=vars(Norm))+theme(axis.text.x = element_blank(),axis.ticks.x = element_blank())+
+    theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))+scale_color_manual(values=colors)+scale_fill_manual(values=colors)
   
   p = ggarrange(p_image,p_norms,ncol=1,nrow=2,heights = c(1,.5),labels=c("a","b"))
   ggsave(paste0(dir,"normalization.svg"),plot=p,device="svg",height=6,width=8)
@@ -128,7 +143,7 @@ figure_auc_facet = function(meta,class_list,file_name,group_colors,dir="../Figur
   ids_all = rep(TRUE,nrow(meta))
   ids_gender = list(All = ids_all,Male= meta$Gender.Flag=="M",Female= !meta$Gender.Flag=="M")
   ids_age = list(ids_all,meta$Age.at.Collection >= age_cut, meta$Age.at.Collection < age_cut)
-  names(ids_age) = c("All","68 and Older","Yonger than 68")
+  names(ids_age) = c("All","68 and Older","Younger than 68")
   exp_levels = c("PDAC vs Benign","PDAC vs Non-Cancer","PDAC vs All")
   ##### Make ROC Column #####
   #Compute roc values
@@ -225,7 +240,7 @@ figure_full_ca19 = function(pdac_meta,train_lists,test_lists,g_names,dir="../Fig
   p_b = ggarrange(p_ca,p_roc,nrow=1)
   #save
   ggsave(paste(dir,"CA19_9_comparison.svg",sep=""),plot=p_b,device="svg",height=6,width=9)
-  
+  return(c(train_plots[[4]],test_plots[[4]]))
 }
 
 #Create faceted auc plot for 2 groups of 3 classifiers: P vs B, P vs NC, P vs All
@@ -262,6 +277,11 @@ figure_ca19 = function(meta,class_list1,class_list2,class_list3,g_names,name){
   roc_b_pvb3 = roc(factor(meta$Group[PvB]=="PDAC"),score_pvb3)
   roc_b_pvnc3 = roc(factor(meta$Group[PvNC]=="PDAC"),score_pvnc3)
   
+  #test significance
+  sig_b = roc.test(roc_b_pvb1,roc_b_pvb2,method="delong")
+  sig_nc = roc.test(roc_b_pvnc1,roc_b_pvnc2,method="delong")
+  sig_all = roc.test(roc_b_all1,roc_b_all2,method="delong")
+  
   #make facet plot
   roc_b_facet = c()
   roc_b_facet = rbind(roc_b_facet,cbind(roc_b_pvb1$sensitivities,1-roc_b_pvb1$specificities,exp_levels[1],g_names[1]))
@@ -279,6 +299,10 @@ figure_ca19 = function(meta,class_list1,class_list2,class_list3,g_names,name){
   auc_b1 = paste0(g_names[1],": ",round(c(roc_b_pvb1$auc,roc_b_pvnc1$auc,roc_b_all1$auc),3))
   auc_b2 = paste0(g_names[2],": ",round(c(roc_b_pvb2$auc,roc_b_pvnc2$auc,roc_b_all2$auc),3))
   auc_b3 = paste0(g_names[3],": ",round(c(roc_b_pvb3$auc,roc_b_pvnc3$auc,roc_b_all3$auc),3))
+  
+  if(sig_b$p.value < .05){ auc_b2[1] = paste0(auc_b2[1],"*") }
+  if(sig_nc$p.value < .05){ auc_b2[2] = paste0(auc_b2[2],"*") }
+  if(sig_all$p.value < .05){ auc_b2[3] = paste0(auc_b2[3],"*") }
   
   p_roc_b = ggplot(data.frame(y=as.numeric(roc_b_facet[,1]),x=as.numeric(roc_b_facet[,2]),Experiment=factor(roc_b_facet[,3],levels=exp_levels),Method=roc_b_facet[,4]),aes(x=x,y=y,color=Method))+
     xlab("False Positive Rate")+ylab("True Positive Rate")+ggtitle("")+
@@ -315,73 +339,64 @@ figure_ca19 = function(meta,class_list1,class_list2,class_list3,g_names,name){
     facet_grid(rows=vars(Experiment))+theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))
   
   ##### Make CA19-9 plots with PPV/NPV #####
-  PPV = sum(meta$Group=="PDAC" & meta$CA19_9 >= 37) / sum(meta$CA19_9 >= 37)
+  p_ca19 = figure_ppv_npv(meta,log(meta$CA19_9),log(37),"Log CA19-9")
   NPV = sum(meta$Group!="PDAC" & meta$CA19_9 < 37) / sum(meta$CA19_9 < 37)
-  p_ca19 = ggplot(data.frame(Group=factor(meta$Group,levels=group_levels),Level=log(as.numeric(meta$CA19_9))),aes(x=Group,y=Level))+
-    geom_violin(aes(color=Group),show.legend = FALSE)+geom_hline(yintercept=log(37),linetype="dashed",color="black")+
-    geom_point(aes(color=Group),show.legend=FALSE,position=position_jitterdodge())+
-    xlab("")+ylab("Log CA19-9")+ggtitle("")+ylim(c(0,10))+
-    scale_fill_manual(values=group_colors)+
-    geom_label(aes(label=paste0("PPV = ",round(PPV,3)),x="Pancreatitis",y=9),size=2.7)+
-    geom_label(aes(label=paste0("NPV = ",round(NPV,3)),x="IPMN",y=9),size=2.7)+
+  
+  return(list(p_ca19,p_group_b,p_roc_b,NPV))
+}
+
+figure_pdac_ppv_npv = function(meta,pdac_scores,ids_train,ids_val,name,score_name,dir="../Figures/",npvs=NULL,cutoff=NULL){
+  if(is.null(npvs)){ npvs = c(.95,.95) }
+  if(is.null(cutoff)){
+    train_NPV_cut = NPV_cutoff_value(pdac_scores[ids_train],meta$Group[ids_train]=="PDAC",NPV_target = npvs[1])
+    val_NPV_cut = NPV_cutoff_value(pdac_scores[ids_val],meta$Group[ids_val]=="PDAC",NPV_target = npvs[2])
+  } else{
+    train_NPV_cut = cutoff
+    val_NPV_cut = cutoff
+  }
+  fig_pdac_ppv_train = figure_ppv_npv(meta[ids_train,],pdac_scores[ids_train],train_NPV_cut,score_name)
+  fig_pdac_ppv_val = figure_ppv_npv(meta[ids_val,],pdac_scores[ids_val],val_NPV_cut,score_name)
+  
+  p_ppv = ggarrange(fig_pdac_ppv_train,fig_pdac_ppv_val,ncol=1,heights=c(1,1),labels=c("c","d"))
+  
+  ## Without other cancer
+  o_ids = meta$Group=="Other Cancer"
+  if(is.null(cutoff)){
+    train_NPV_cut = NPV_cutoff_value(pdac_scores[ids_train & !o_ids],meta$Group[ids_train & !o_ids]=="PDAC")
+    val_NPV_cut = NPV_cutoff_value(pdac_scores[ids_val & !o_ids],meta$Group[ids_val & !o_ids]=="PDAC")
+  } else{
+    train_NPV_cut = cutoff
+    val_NPV_cut = cutoff
+  }
+  
+  fig_pdac_ppv_train = figure_ppv_npv(meta[ids_train & !o_ids,],pdac_scores[ids_train & !o_ids],train_NPV_cut,score_name)
+  fig_pdac_ppv_val = figure_ppv_npv(meta[ids_val & !o_ids,],pdac_scores[ids_val & !o_ids],val_NPV_cut,score_name)
+  
+  p2_ppv = ggarrange(fig_pdac_ppv_train,fig_pdac_ppv_val,ncol=1,heights=c(1,1),labels=c("a","b"))
+  
+  p_full = ggarrange(p2_ppv,p_ppv,ncol=2)
+  #save
+  ggsave(paste(dir,name,"_PPV_NPV.svg",sep=""),plot=p_full,device="svg",height=6,width=9)
+  
+}
+
+figure_ppv_npv = function(meta,scores,cutoff,score_name){
+  group_colors = c("forestgreen","blue","gold","purple","orange","red")
+  group_levels = c("Benign","Pancreatitis","IPMN","PDAC","ICT","Other Cancer")
+  names(group_colors) = group_levels
+  
+  PPV = sum(meta$Group=="PDAC" & scores >= cutoff) / sum(scores >= cutoff)
+  NPV = sum(meta$Group!="PDAC" & scores < cutoff) / sum(scores < cutoff)
+  p_ppv = ggplot(data.frame(Group=factor(meta$Group,levels=group_levels),Level=scores),aes(x=Group,y=Level))+
+    geom_boxplot(aes(color=Group),outlier.shape = NA,show.legend = F)+geom_hline(yintercept=cutoff,linetype="dashed",color="black")+
+    geom_jitter(aes(color=Group),width=.2,show.legend=FALSE)+
+    xlab("")+ylab(score_name)+ggtitle("")+
+    scale_color_manual(values=group_colors)+
+    geom_label(aes(label=paste0("PPV = ",round(PPV,3)),x="Pancreatitis",y=max(scores)),size=2.7)+
+    geom_label(aes(label=paste0("NPV = ",round(NPV,3)),x="IPMN",y=max(scores)),size=2.7)+
     theme(panel.background = element_rect(fill="white"),panel.grid = element_line(color="gray90"))
-  
-  
-  return(list(p_ca19,p_group_b,p_roc_b))
-}
-
-figure_survival_plot = function(pdac_metadata,score_list,surv_data_pvb,surv_data_pvnc,surv_data_all,quans,dir="../Figures/"){
-  #Create survival plots
-  p_surv_pvb_c = survival_single_plot(surv_data_pvb[[1]][[1]],surv_data_pvb[[1]][[2]],quans[1])
-  p_surv_pvnc_c = survival_single_plot(surv_data_pvnc[[1]][[1]],surv_data_pvnc[[1]][[2]],quans[2])
-  p_surv_all_c = survival_single_plot(surv_data_all[[1]][[1]],surv_data_all[[1]][[2]],quans[3])
-  p_surv_pvb_b = survival_single_plot(surv_data_pvb[[2]][[1]],surv_data_pvb[[2]][[2]],quans[1])
-  p_surv_pvnc_b = survival_single_plot(surv_data_pvnc[[2]][[1]],surv_data_pvnc[[2]][[2]],quans[2])
-  p_surv_all_b = survival_single_plot(surv_data_all[[2]][[1]],surv_data_all[[2]][[2]],quans[3])
-  
-  
-  #Boxplots for stages
-  p_box_pvb_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[1]])
-  p_box_pvnc_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[2]])
-  p_box_all_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[3]])
-  p_box_pvb_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[1]])
-  p_box_pvnc_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[2]])
-  p_box_all_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[3]])
-  
-  
-  #Arrange columns for final figures
-  wd = c(.6,1)
-  p_pvb_c = ggarrange(p_box_pvb_c,p_surv_pvb_c,nrow=1,widths = wd,labels=c("a","b"))
-  p_pvb_c = annotate_figure(p_pvb_c,top=text_grob("CEDAR Cross Validation, PDAC vs Benign",size=16))
-  p_pvb_b = ggarrange(p_box_pvb_b,p_surv_pvb_b,nrow=1,widths = wd,labels=c("c","d"))
-  p_pvb_b = annotate_figure(p_pvb_b,top=text_grob("BCC Validation, PDAC vs Benign",size=16))
-  
-  p_pvnc_c = ggarrange(p_box_pvnc_c,p_surv_pvnc_c,labels=c("a","b"),widths = wd)
-  p_pvnc_c = annotate_figure(p_pvnc_c,top=text_grob("CEDAR Cross Validation, PDAC vs Non-Cancer",size=16))
-  p_all_c = ggarrange(p_box_all_c,p_surv_all_c,labels=c("c","d"),widths = wd)
-  p_all_c = annotate_figure(p_all_c,top=text_grob("CEDAR Cross Validation, PDAC vs All",size=16))
-  p_pvnc_b = ggarrange(p_box_pvnc_b,p_surv_pvnc_b,labels=c("e","f"),widths = wd)
-  p_pvnc_b = annotate_figure(p_pvnc_b,top=text_grob("BCC Validation, PDAC vs Non-Cancer",size=16))
-  p_all_b = ggarrange(p_box_all_b,p_surv_all_b,labels=c("g","h"),widths = wd)
-  p_all_b = annotate_figure(p_all_b,top=text_grob("BCC Validation, PDAC vs All",size=16))
-  
-  p_fig = ggarrange(p_pvb_c,p_pvb_b,nrow=2)
-  p_sup = ggarrange(p_pvnc_c,p_all_c,p_pvnc_b,p_all_b,ncol=1)
-  
-  ggsave(paste(dir,"survival_PvB.svg",sep=""),plot=p_fig,device="svg",height=6.5,width=6.5)
-  ggsave(paste(dir,"supp_survival.svg",sep=""),plot=p_sup,device="svg",height=13,width=6.5)
-  
-}
-
-survival_single_plot = function(surv_data,pvals,quan){
-  col_groups = c("blue","red")
-  names(col_groups) = c(paste0("Score < ",100*quan,"th percentile"),paste0("Score > ",100*quan,"th percentile"))
-  p = ggplot(data.frame(surv=as.numeric(surv_data[,1]),time=as.numeric(surv_data[,2]),group = factor(surv_data[,3],levels=names(col_groups))),aes(x=time,y=surv,color=group))+
-    geom_step(aes(linetype=group),size=1.5)+scale_color_manual(values=col_groups)+ylab("Survival Probability")+xlab("Survival Time (Months)")+
-    ylim(c(0,1))+theme(legend.position = "bottom",legend.title = element_blank(),panel.background = element_rect(fill="white"),legend.key = element_rect(fill="white"),panel.grid = element_line(color="gray90"))+
-    geom_label(data=data.frame(pv = pvals[1]),aes(x=25,y=0.75,label=pv),color="black")
-  
-  return(p)
+ 
+  return(p_ppv) 
 }
 
 stage_single_boxplot = function(meta,source,score){
@@ -418,6 +433,90 @@ stage_single_boxplot = function(meta,source,score){
   
   return(p_stage_c)
 }
+
+figure_survival_plot_coxph = function(pdac_metadata,score_list,surv_data_pvb,surv_data_pvnc,surv_data_all,quans,dir="../Figures/"){
+  #create survival plots 
+  #plots that keep the distributions so it is easy to compare
+  p_surv_pvb_c =  survival_single_plot_coxph(  surv_data_pvb[[1]][[2]],  surv_data_pvb[[1]][[3]],  surv_data_pvb[[1]][[4]],quans[1])
+  p_surv_pvnc_c = survival_single_plot_coxph( surv_data_pvnc[[1]][[2]], surv_data_pvnc[[1]][[3]], surv_data_pvnc[[1]][[4]],quans[2])
+  p_surv_all_c =  survival_single_plot_coxph(  surv_data_all[[1]][[2]],  surv_data_all[[1]][[3]],  surv_data_all[[1]][[4]],quans[3])
+  p_surv_pvb_b =  survival_single_plot_coxph(  surv_data_pvb[[2]][[2]],  surv_data_pvb[[2]][[3]],  surv_data_pvb[[2]][[4]],quans[1])
+  p_surv_pvnc_b = survival_single_plot_coxph( surv_data_pvnc[[2]][[2]], surv_data_pvnc[[2]][[3]], surv_data_pvnc[[2]][[4]],quans[2])
+  p_surv_all_b =  survival_single_plot_coxph(  surv_data_all[[2]][[2]],  surv_data_all[[2]][[3]],  surv_data_all[[2]][[4]],quans[3])
+  
+  #compute coefficient table
+  coef_table = cbind(p_surv_pvb_c[[2]][,c(1,2,6)],cohort="CEDAR",experiment="PDAC vs Benign")
+  coef_table = rbind(coef_table,cbind(p_surv_pvnc_c[[2]][,c(1,2,6)],cohort="CEDAR",experiment="PDAC vs Non-Cancer"))
+  coef_table = rbind(coef_table,cbind(p_surv_all_c[[2]][,c(1,2,6)],cohort="CEDAR",experiment="PDAC vs All"))
+  coef_table = rbind(coef_table,cbind(p_surv_pvb_b[[2]][,c(1,2,6)],cohort="BCC",experiment="PDAC vs Benign"))
+  coef_table = rbind(coef_table,cbind(p_surv_pvnc_b[[2]][,c(1,2,6)],cohort="BCC",experiment="PDAC vs Non-Cancer"))
+  coef_table = rbind(coef_table,cbind(p_surv_all_b[[2]][,c(1,2,6)],cohort="BCC",experiment="PDAC vs All"))
+  
+  write.csv(coef_table,paste0(dir,"survival_coefficients.csv"))
+  
+  #Boxplots for stages
+  p_box_pvb_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[1]])
+  p_box_pvnc_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[2]])
+  p_box_all_c = stage_single_boxplot(pdac_metadata,"CEDAR",score_list[[3]])
+  p_box_pvb_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[1]])
+  p_box_pvnc_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[2]])
+  p_box_all_b = stage_single_boxplot(pdac_metadata,"BCC",score_list[[3]])
+  
+  
+  #Arrange columns for final figures
+  #wd = c(1.,2.)
+  wd = c(1.,1.)
+  p_pvb_c = ggarrange(p_box_pvb_c,p_surv_pvb_c[[1]], nrow=1,widths = wd,labels=c("a","b"))
+  p_pvb_c = annotate_figure(p_pvb_c,top=text_grob("CEDAR Cross Validation, PDAC vs Benign",size=16))
+  p_pvb_b = ggarrange(p_box_pvb_b,p_surv_pvb_b[[1]], nrow=1,widths = wd,labels=c("c","d"))
+  p_pvb_b = annotate_figure(p_pvb_b,top=text_grob("BCC Validation, PDAC vs Benign",size=16))
+  
+  p_pvnc_c = ggarrange(p_box_pvnc_c,p_surv_pvnc_c[[1]], nrow=1, labels=c("a","b"),widths = wd)
+  p_pvnc_c = annotate_figure(p_pvnc_c,top=text_grob("CEDAR Cross Validation, PDAC vs Non-Cancer",size=16))
+  p_all_c = ggarrange(p_box_all_c,p_surv_all_c[[1]], nrow=1, labels=c("c","d"),widths = wd)
+  p_all_c = annotate_figure(p_all_c,top=text_grob("CEDAR Cross Validation, PDAC vs All",size=16))
+  p_pvnc_b = ggarrange(p_box_pvnc_b,p_surv_pvnc_b[[1]], nrow=1, labels=c("e","f"),widths = wd)
+  p_pvnc_b = annotate_figure(p_pvnc_b,top=text_grob("BCC Validation, PDAC vs Non-Cancer",size=16))
+  p_all_b = ggarrange(p_box_all_b,p_surv_all_b[[1]], nrow=1, labels=c("g","h"),widths = wd)
+  p_all_b = annotate_figure(p_all_b,top=text_grob("BCC Validation, PDAC vs All",size=16))
+  
+  p_sup = ggarrange(p_pvb_c,p_pvnc_c,p_all_c,p_pvb_b,p_pvnc_b,p_all_b,ncol=1)
+  
+  p_all_c = ggarrange(p_box_all_c,p_surv_all_c[[1]], nrow=1, labels=c("a","b"),widths = wd)
+  p_all_c = annotate_figure(p_all_c,top=text_grob("CEDAR Cross Validation, PDAC vs All",size=16))
+  p_all_b = ggarrange(p_box_all_b,p_surv_all_b[[1]], nrow=1, labels=c("c","d"),widths = wd)
+  p_all_b = annotate_figure(p_all_b,top=text_grob("BCC Validation, PDAC vs All",size=16))
+  
+  p_fig = ggarrange(p_all_c,p_all_b,nrow=2)
+  
+  ggsave(paste(dir,"survival_coxph.svg",sep=""),plot=p_fig,device="svg",height=10,width=14.)
+  ggsave(paste(dir,"supp_survival_coxph.svg",sep=""),plot=p_sup,device="svg",height=18,width=14.)
+  
+}
+
+survival_single_plot_coxph = function(pval_in, surv_obj, surv_data_in, quan){
+  col_groups = c("blue","red")
+  #now we want to calculate the cox proportional hazards for this model as well
+  quan2 <- quan
+  proportional_hazards_discrete <-surv_fit(surv_obj~(Discriminant.Score>quan2),data=surv_data_in)
+  pval <- pval_in[[1]]
+  print(pval)
+  proportional_hazards_continuous <- coxph(surv_obj~Discriminant.Score, data=surv_data_in)
+  proportional_hazards_continuous_age_sex <-  coxph(surv_obj~ Discriminant.Score+sex+age , data = surv_data_in)
+  names(col_groups) = c(paste0("Score < ",100*quan,"th percentile"),paste0("Score > ",100*quan,"th percentile"))
+  p = ggsurvplot(proportional_hazards_discrete, conf.int = TRUE, legend.labs=names(col_groups),
+                 ggtheme = theme_bw(), pval=FALSE, legend= c(0.3, 0.15))
+  p$plot <- p$plot + annotate("label", label=pval, x=30.0,y=0.9)
+  
+  
+  #now we make the table and combine the plot with the table
+  coxph_table<- as.data.frame(summary(proportional_hazards_continuous_age_sex)$coefficients) 
+  coxph_table = cbind(var=row.names(coxph_table),coxph_table)
+  row.names(coxph_table) = NULL
+  
+  return(list(p$plot, coxph_table))
+}
+
 
 
 param_plots = function(param,dir="../Figures/"){
@@ -479,19 +578,45 @@ biomaker_expression = function(data,genes,meta,group_levels,rows=5,cols=8,dir=".
   ggsave(paste0(dir,"expression_cedar.svg"),plot=p_c,device="svg",height=10,width=15)
 }
 
-age_gender_correlation = function(score_list,meta,dir="../Figures/"){
-  meta = meta[meta$Group!="PDAC" & meta$Gender.Flag %in% c("M","F"),]
-  exp_labels = c("PDAC vs Benign","PDAC vs Non-Cancer","PDAC vs All")
-  df = rbind(cbind(score_list[[1]][names(score_list[[1]]) %in% meta$SeqID],meta$Age.at.Collection[meta$SeqID %in% names(score_list[[1]])],meta$Gender.Flag[meta$SeqID %in% names(score_list[[1]])],exp_labels[1]),
-             cbind(score_list[[2]][names(score_list[[2]]) %in% meta$SeqID],meta$Age.at.Collection[meta$SeqID %in% names(score_list[[2]])],meta$Gender.Flag[meta$SeqID %in% names(score_list[[2]])],exp_labels[2]),
-             cbind(score_list[[3]][names(score_list[[3]]) %in% meta$SeqID],meta$Age.at.Collection[meta$SeqID %in% names(score_list[[3]])],meta$Gender.Flag[meta$SeqID %in% names(score_list[[3]])],exp_labels[3]))
-  p_age = ggplot(data.frame(score=as.numeric(df[,1]),age=as.numeric(df[,2]),exp=factor(df[,4],levels=exp_labels)),aes(x=age,y=score))+
-                  geom_point()+xlab("Age at Collection")+ylab("PDAC Score")+
-                  facet_grid(rows=vars(exp))
-  p_gender = ggplot(data.frame(score=as.numeric(df[,1]),gender=df[,3],exp=factor(df[,4],levels=exp_labels)),aes(x=gender,y=score))+
-    geom_boxplot(outlier.shape = NA)+geom_jitter(width = .2)+xlab("Gender")+
-    ylab("PDAC Score")+facet_grid(rows=vars(exp))
+smote_comparison = function(X_sm,Y_sm,Xt,dir="../Figures/"){
+  library(umap)
+  library(ggsci)
+  X_sm = X_sm[,Y_sm == "PDAC"]
+  ### Identify synthetic samples and PDAC labels
+  synth_ids = which(!colnames(X_sm) %in% colnames(Xt))
+  Y = rep("Real PDAC CEDAR",ncol(X_sm))
+  Y[synth_ids] = "SMOTE PDAC"
+  ### Visualize PCA and umap landscape of synthetic and real PDAC samples
+  um = umap(t(X_sm))
+  pca = prcomp(X_sm)
   
-  p = ggarrange(p_age,p_gender,ncol=2,nrow=1,labels=c("a","b"))
-  ggsave(paste0(dir,"age_gender.svg"),plot=p,device="svg",height=6,width=6)
+  p_pca = dim_plot(pca$rotation[,1],pca$rotation[,2],Y,"Source","PCA of PDAC Samples",lab="PC")+
+          scale_color_startrek()
+  p_um = dim_plot(um$layout[,1],um$layout[,2],Y,"Source","UMAP of PDAC Samples",lab="UMAP")+
+          scale_color_startrek()
+  
+  p = ggarrange(p_pca,p_um,nrow=1,labels = c("a","b"),common.legend = TRUE,legend="right")
+  ggsave(paste0(dir,"smote_comp.svg"),plot=p,device="svg",height=6,width=12)
+}
+
+dim_plot = function(x,y,meta,meta_name,title,lab="UMAP"){
+  xrng = c(min(x),max(x))
+  xadd = (xrng[2]-xrng[1])*.05
+  yrng = c(min(y),max(y))
+  yadd = (yrng[2]-yrng[1])*.05
+  
+  p = ggplot(data.frame(x=as.numeric(x),y=as.numeric(y),color=meta),
+             aes(x=x,y=y,color=color))+geom_point()+
+    theme(panel.background = element_rect(fill="white"),panel.grid = element_blank())+
+    theme(axis.line = element_blank(),
+          axis.title = element_text(vjust = 0, hjust = 0),
+          axis.text=element_blank(),
+          axis.ticks=element_blank())+
+    annotate(geom="segment",x=(xrng[1]-xadd),xend=(xrng[1]+4*xadd),y=(yrng[1]-yadd),yend=(yrng[1]-yadd),
+             arrow=grid::arrow(length=unit(.2,"cm")))+
+    annotate(geom="segment",x=(xrng[1]-xadd),xend=(xrng[1]-xadd),y=(yrng[1]-yadd),yend=(yrng[1]+4*yadd),
+             arrow=grid::arrow(length=unit(.2,"cm")))+
+    ggtitle(title)+xlab(paste0(lab,"_1"))+ylab(paste0(lab,"_2"))+
+    guides(color=guide_legend(title=meta_name))
+  return(p)
 }

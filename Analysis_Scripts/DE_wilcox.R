@@ -1,12 +1,17 @@
-DE_wilcox = function(counts,groups,label_filt = NULL){
+# Wilcoxon rank sum test for differential genes
+# Takes count table (matrix) and binary labels as inputs
+# By default labels are assumed to be boolean, with the values of TRUE treated as the first class
+# A character vector of labels can also be passed
+#     In this case comp_label should be the string of the positive label, with all others treated as negative
+DE_wilcox = function(counts,groups,label_filt = NULL,comp_label=TRUE){
   if(!is.null(label_filt)){
     ids = groups %in% label_filt
     counts = counts[,ids]
     groups = groups[ids]
   }
   if(is.null(row.names(counts))){ row.names(counts) = 1:nrow(counts)}
-  id1 = groups == groups[1]
-  id2 = groups != groups[1]
+  id1 = groups == comp_label
+  id2 = groups != comp_label
   D = matrix(0,nrow=nrow(counts),ncol=4)
   #row.names(D) = row.names(counts)
   

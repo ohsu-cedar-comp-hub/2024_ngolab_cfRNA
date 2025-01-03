@@ -1,30 +1,36 @@
-classifier_suite = function(counts_train,labels_train,meta_train,counts_val,labels_val,meta_val,params=list()){
+# Head function for performing all downstream classification tasks, including evaluation on training and validation.
+# Takes a numeric feature matrix, labels, and meta-data matrix for training and validation groups.
+#       Meta data frame needs to have a 'Group' column, used to separate the experiment groups.
+# Can additionally pass in a list of classifier parameters and classifier algorithm
+#       Accepted algorithm values are RF (random forest), SVM, and LDA
+# Function makes multiple calls to k_fold_validation and test_validation, and returns a list of their results.
+classifier_suite = function(counts_train,labels_train,meta_train,counts_val,labels_val,meta_val,params=list(),useSmote=TRUE,alg="RF"){
   BvsP_train = meta_train$Group %in% c("Benign","PDAC")     #Benign and PDAC samples
   BvsP_val = meta_val$Group %in% c("Benign","PDAC")
   NCvsP_train = meta_train$Group != "Other Cancer"          #PDAC and other non-cancer samples
   NCvsP_val = meta_val$Group != "Other Cancer"
   
   #10-fold cross validation
-  kfold_b_vs_p = k_fold_validation(counts_train[,BvsP_train],labels_train[BvsP_train],10,alg="RF",params=params)
-  kfold_nc_vs_p = k_fold_validation(counts_train[,NCvsP_train],labels_train[NCvsP_train],10,alg="RF",params=params)
-  kfold_all = k_fold_validation(counts_train,labels_train,10,alg="RF",params=params)
+  kfold_b_vs_p = k_fold_validation(counts_train[,BvsP_train],labels_train[BvsP_train],10,alg=alg,params=params,useSmote = useSmote)
+  kfold_nc_vs_p = k_fold_validation(counts_train[,NCvsP_train],labels_train[NCvsP_train],10,alg=alg,params=params,useSmote = useSmote)
+  kfold_all = k_fold_validation(counts_train,labels_train,10,alg=alg,params=params,useSmote = useSmote)
   
   #External validation
   val_b_vs_p = test_validation(counts_train[,BvsP_train],
                                labels_train[BvsP_train],
                                counts_val[,BvsP_val],
                                labels_val[BvsP_val],
-                               alg="RF",params=params)
+                               alg=alg,params=params,useSmote = useSmote)
   val_nc_vs_p = test_validation(counts_train[,NCvsP_train],
                                 labels_train[NCvsP_train],
                                 counts_val[,NCvsP_val],
                                 labels_val[NCvsP_val],
-                                alg="RF",params=params)
+                                alg=alg,params=params,useSmote = useSmote)
   val_all = test_validation(counts_train,
                             labels_train,
                             counts_val,
                             labels_val,
-                            alg="RF",params=params)
+                            alg=alg,params=params,useSmote = useSmote)
   
   return(list(kfold_b_vs_p,kfold_nc_vs_p,kfold_all,val_b_vs_p,val_nc_vs_p,val_all))
 }
@@ -74,7 +80,10 @@ param_search = function(X,Y,k,alg,ratio=0,useSmote=TRUE){
   return(results)
 }
 
-
+# Performs k-fold validation of the classification of feature matrix X given labels Y
+# If ratio is passed as a non-zero percentage, then each fold will be a random sample (with replacement) of that percentage of the data
+# Recognized values for alg are RF (random forest), SVM, and LDA
+# Returns a list of the cross validation AUC (or average AUC across folds if ratio is not 0), the prediction values for each sample
 k_fold_validation = function(X,Y,k,ratio=0,alg="RF",useSmote=TRUE,useLog=TRUE,params=list(),labels = unique(Y)){
   library(randomForest)
   library(e1071)
@@ -107,7 +116,6 @@ k_fold_validation = function(X,Y,k,ratio=0,alg="RF",useSmote=TRUE,useLog=TRUE,pa
   row.names(pred) = colnames(X)
   n_pred = rep(0,length(Y))
   
-  all_feats = c()
   #for each fold
   for(i in 1:k){
     #split training and validation, by groups
@@ -169,12 +177,16 @@ k_fold_validation = function(X,Y,k,ratio=0,alg="RF",useSmote=TRUE,useLog=TRUE,pa
   }
   
   if(ratio==0){
-    return(list(AUC,pred,all_feats))
+    return(list(AUC,pred))
   } else{
-    return(list(colMeans(avg_auc),pred,all_feats))
+    return(list(colMeans(avg_auc),pred))
   }
 }
 
+# Trains a classifier on the feature set X_train with labels Y_train, predicts on feature set X_val, and evaluates prediction using Y_val
+# Recognized values for alg are RF (random forest), SVM, and LDA
+# Returns a list of the prediction AUC, the prediction values for the validation set, prediction values for training set, and the training features and labels
+#     If useSMOTE is set to TRUE, the outputted training set and labels will contain the synthetic samples created using SMOTE
 test_validation = function(X_train,Y_train,X_val,Y_val,alg="RF",useSmote=TRUE,useLog=TRUE,params=list(),labels=unique(Y_train)){
   library(randomForest)
   library(e1071)
@@ -235,5 +247,24 @@ test_validation = function(X_train,Y_train,X_val,Y_val,alg="RF",useSmote=TRUE,us
       AUC[i] = auc(roc(factor(Y_val==labels[i]),pred[,i]))
     }
   }
-  return(list(AUC,pred,predt))
+  return(list(AUC,pred,predt,X_train,Y_train))
+}
+
+#Identify cutoff value for scores that produces NPV closest to target value
+NPV_cutoff_value = function(scores,isPDAC,NPV_target=.95){
+  ids = order(scores)
+  scores = scores[ids]
+  isPDAC = isPDAC[ids]
+  NPVs = rep(0,length(scores))
+  cutoffs = NPVs
+  for(i in 2:length(scores)){
+    cut = mean(scores[i])
+    nids = scores < cut
+    if(sum(nids)==0){next}
+    NPV = sum(!isPDAC[nids])/sum(nids)
+    cutoffs[i] = cut
+    NPVs[i] = NPV
+  }
+  id = which.min(abs(NPVs - NPV_target))
+  return(cutoffs[id])
 }
