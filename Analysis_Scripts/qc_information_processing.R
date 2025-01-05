@@ -1,13 +1,12 @@
 library(tidyverse)
 
-#changed one
-#change these filepaths to be the location of where the following files are on your computer
 ####Loading QC metadata
-qc_metrics_metadata <- read.csv("~/Library/CloudStorage/OneDrive-OregonHealth&ScienceUniversity/PDAC_paper_scripts/PDAC_paper_meta.csv")
+qc_metrics_metadata <- read.csv("./pdac_meta.csv")
 
+	
 #read.csv(./qcmetadata)
 #Filter by the samples that we are using
-qc_metrics <- read.delim("~/Library/CloudStorage/OneDrive-OregonHealth&ScienceUniversity/PDAC_analysis/ncRNA_PDAC_Metadata_W_QC_Metrics.txt") %>%
+qc_metrics <- read.delim("./pdac_qc_metrics.txt") %>%
   as.data.frame()
 qc_metrics_filtered <- qc_metrics %>% filter(SeqID %in% qc_metrics_metadata$SeqID)
 qc_metrics_filtered$Set <-ifelse(grepl("CEDAR", qc_metrics_filtered$Set), "CEDAR", "BCC")
@@ -18,9 +17,7 @@ qc_metrics_filtered$SeqID <- factor(qc_metrics_filtered$SeqID)
 #write.table(qc_metrics_filtered, file=".")
 
 #Loading Unprocessed sequence counts
-#need to get the counts that aren't just the passing counts
-#pdac_data_unprocessed<- read.csv("~/Downloads/paper_norm_counts.csv", sep=",", row.names = 1)
-pdac_counts <- read.csv("~/Downloads/PDAC_5set_genecount.csv")
+pdac_counts <- read.csv("./pdac_genecount.csv.gz")
 pdac_counts <- pdac_counts %>% pivot_longer(!gene_name) %>%
   group_by(gene_name,name) %>% summarize(value=sum(value)) %>% pivot_wider()
 pdac_data_unprocessed <- pdac_counts %>% as.data.frame() %>% filter(!is.na(gene_name))
@@ -47,42 +44,15 @@ qc_size<- qc_metrics_filtered %>%
 qc_size_longer<- pivot_longer(qc_size, !c("SeqID", "Set"))
 qc_size_longer$Set <- factor(qc_size_longer$Set)
 qc_size_longer$SeqID <- factor(qc_size_longer$SeqID, levels =qc_metrics_filtered$SeqID )
-color_vec <- c('#66c2a5','#8da0cb')
-names(color_vec) <- c("CEDAR", "BCC")
-#now we are plotting the qc curves for both of the cohorts
-qc_size_plot_CEDAR<- ggplot(qc_size_longer %>% filter(Set=="CEDAR"), aes(x=SeqID, y=value, fill=Set)) + 
-  geom_bar(stat="identity") + theme_classic() +xlab("Sample")+
-  ylab("Total deduplicated reads") +
-  theme(axis.text.x = element_text(angle = 90, size=10), legend.position = "none")+
-  ggtitle("CEDAR Samples")+
-  scale_fill_manual(values=color_vec)+
-  ylim(0,8000000)
-qc_size_plot_BCC <- ggplot(qc_size_longer%>%filter(Set=="BCC"), aes(x=SeqID, y=value, fill=Set)) + 
-  geom_bar(stat="identity") + theme_classic() +xlab("Sample")+
-  ylab("Total deduplicated reads") +
-  theme(axis.text.x = element_text(angle = 90, size=10), legend.position = "none")+
-  ggtitle("BCC Samples")+
-  scale_fill_manual(values=color_vec)+
-  ylim(0,8000000)
-#want to make it easy to see any differences without being confused by the scale^
+
 
 ## Creating intron exon intergenic fraction plot
-#this plot will be used with the saturation curves to show
 qc_intron_exon_fraction <- qc_metrics_filtered %>%
    dplyr::select(c(intron_fraction, exon_fraction, intergenic_fraction, SeqID, Set)) 
 qc_fractions <- pivot_longer(qc_intron_exon_fraction, !c("SeqID", "Set"))                    
 qc_fractions$SeqID <- factor(qc_fractions$SeqID, levels=qc_metrics_filtered$SeqID)
 qc_fractions$name <- factor(qc_fractions$name, levels=c("intergenic_fraction","intron_fraction","exon_fraction"))
-color_list <- c('#66c2a5','#fc8d62','#8da0cb')
-names(color_list) <- c("intergenic_fraction", "exon_fraction", "intron_fraction")
-qc_fractions_plot_BCC <- ggplot(qc_fractions %>% filter(Set=="BCC"), aes(x=SeqID, y=value, fill=name)) + 
-  geom_bar(stat="identity", position="fill") +theme_classic() + scale_fill_manual(values=color_list)+
-  theme(axis.text.x = element_text(angle = 90, size=10)) +
-  ylab("Fraction of total reads") +xlab("")
-qc_fractions_plot_CEDAR <- ggplot(qc_fractions%>%filter(Set=="CEDAR"), aes(x=SeqID, y=value, fill=name)) + 
-  geom_bar(stat="identity", position="fill") +theme_classic() + scale_fill_manual(values=color_list)+
-  theme(axis.text.x = element_text(angle = 90, size=10)) +
-  ylab("Fraction of total reads") +xlab("")
+
 
 ##################################
 ##################################
@@ -131,48 +101,6 @@ long_counts_grouped <- long_counts %>% group_by(biotype, sample_name) %>%
 long_counts_grouped$group <- qc_metrics_filtered[match(long_counts_grouped$sample_name, qc_metrics_filtered$SeqID), "Group"]
 long_counts_grouped$set <- qc_metrics_filtered[match(long_counts_grouped$sample_name, qc_metrics_filtered$SeqID), "Set"]
 long_counts_grouped$sample_name <- factor(long_counts_grouped$sample_name, levels=qc_metrics_filtered$SeqID)
-
-#creating separate plots for each cohort
-biotype_qc_plot_BCC <- ggplot(long_counts_grouped %>%filter(set=="BCC") , aes(x=sample_name, y=total_counts, fill=biotype)) +
-  geom_bar(stat="identity", position="fill") +
-  theme_classic()+
-  scale_fill_manual(values=categorical_palette)+
-  theme(axis.text.x = element_text(angle = 90, size=10)) + 
-  ylab("Fraction of total reads") +xlab("")+
-  theme_classic()
-biotype_qc_plot_CEDAR <- ggplot(long_counts_grouped%>%filter(set=="CEDAR"), aes(x=sample_name, y=total_counts, fill=biotype)) +
-  geom_bar(stat="identity", position="fill") +
-  theme_classic()+
-  scale_fill_manual(values=categorical_palette)+
-  theme(axis.text.x = element_text(angle = 90, size=10)) + 
-  ylab("Fraction of total reads") +xlab("")
-#lets create our individual by sample qc plots that combine everything
-qc_size_bar_CEDAR <- qc_size_plot_CEDAR +coord_flip() #+theme(legend.position="top")
-qc_size_bar_BCC <- qc_size_plot_BCC +coord_flip() #+theme(legend.position="top")
-qc_fraction_bar_CEDAR <- qc_fractions_plot_CEDAR + coord_flip()
-qc_fraction_bar_BCC <- qc_fractions_plot_BCC + coord_flip()
-qc_biotype_bar_CEDAR <- biotype_qc_plot_CEDAR + coord_flip()
-qc_biotype_bar_BCC <- biotype_qc_plot_BCC+ coord_flip()
-library(cowplot)
-
-plot_grid(
-  qc_size_bar_CEDAR,
-  qc_fraction_bar_CEDAR,
-  qc_biotype_bar_CEDAR,
-  labels = c('A', 'B', 'C'),
-  align="h",
-  nrow=1,
-  ncol=3
-) 
-plot_grid(
-  qc_size_bar_BCC,
-  qc_fraction_bar_BCC,
-  qc_biotype_bar_BCC,
-  labels = c('A', 'B', 'C'),
-  align="h",
-  nrow=1,
-  ncol=3
-)
 
 #now compare biotypes for broader groups and done with just per sample plotting
 #comparing percentages across sample and sample types 
