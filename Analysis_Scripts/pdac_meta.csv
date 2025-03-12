@@ -20,7 +20,7 @@ PCX19,CEDAR,54,M,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,32.1
 PCX20,CEDAR,67,F,white,IPMN,n/a,n/a,1,n/a,AWD,0.01
 PCX21,CEDAR,46,M,black,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,4.9
 PCX22,CEDAR,62,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,0.01
-PCX23,CEDAR,28,M/F @ birth,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,6.5
+PCX23,CEDAR,28,F,white,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,6.5
 PCX24,CEDAR,46,F,black,Pancreatitis,Chronic Pancreatitis,n/a,n/a,n/a,NED,9.4
 PCX25,CEDAR,73,F,white,Cancer_other,n/a,n/a,1,n/a,AWD,21.1
 PCX26,CEDAR,45,F,asian,Benign Pancreas,n/a,n/a,n/a,n/a,NED,11.4
