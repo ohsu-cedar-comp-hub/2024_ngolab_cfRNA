@@ -1,23 +1,22 @@
 library(tidyverse)
 
 ####Loading QC metadata
-qc_metrics_metadata <- read.csv("./pdac_meta.csv")
-
-	
-#read.csv(./qcmetadata)
+qc_metrics_metadata <- read.csv("../../../PDAC_paper_meta.csv")	
 #Filter by the samples that we are using
-qc_metrics <- read.delim("./pdac_qc_metrics.txt") %>%
+qc_metrics <- read.csv("./pdac_qc_metrics.csv") %>%
   as.data.frame()
 qc_metrics_filtered <- qc_metrics %>% filter(SeqID %in% qc_metrics_metadata$SeqID)
 qc_metrics_filtered$Set <-ifelse(grepl("CEDAR", qc_metrics_filtered$Set), "CEDAR", "BCC")
 qc_metrics_filtered <- qc_metrics_filtered # #only if we want to make it waterfall%>% arrange(Set, -libSize)
-qc_metrics_filtered_correct_col <- qc_metrics_filtered %>% 
-  select(-c("SampleID", "Clinical.Diagnosis")) 
+#qc_metrics_filtered_correct_col <- qc_metrics_filtered %>% 
+#  select(-c("Clinical.Diagnosis")) 
 qc_metrics_filtered$SeqID <- factor(qc_metrics_filtered$SeqID)
 #write.table(qc_metrics_filtered, file=".")
 
 #Loading Unprocessed sequence counts
 pdac_counts <- read.csv("./pdac_genecount.csv.gz")
+pdac_counts$gene_name <- pdac_counts$X
+pdac_counts$X <- NULL
 pdac_counts <- pdac_counts %>% pivot_longer(!gene_name) %>%
   group_by(gene_name,name) %>% summarize(value=sum(value)) %>% pivot_wider()
 pdac_data_unprocessed <- pdac_counts %>% as.data.frame() %>% filter(!is.na(gene_name))
@@ -31,10 +30,10 @@ gene_info_ens90<- read.delim("./hsapiens_gene_ensembl__gene__main.txt.gz", heade
 #TOKEEP
 qc_fraction_info <- qc_metrics_filtered %>% 
   select(c("exon_fraction","intron_fraction", "intergenic_fraction", "libSize",
-           "input_reads", "SeqID")) %>% pivot_longer(!SeqID)
+           "SeqID")) %>% pivot_longer(!SeqID)
 fraction_info_summary <- qc_fraction_info %>% group_by(name) %>%
   summarize(mean=mean(value), max=max(value), min=min(value))
-fraction_info_summary$name <- c("Exon Fraction", "Input Reads", "Intergenic Fraction","Intron Fraction", "Library Size")
+fraction_info_summary$name <- c("Exon Fraction", "Intergenic Fraction","Intron Fraction", "Library Size")
 #write.table(fraction_info_summary, file="./PDAC_read_type_fraction.txt", )
 
 
@@ -48,8 +47,8 @@ qc_size_longer$SeqID <- factor(qc_size_longer$SeqID, levels =qc_metrics_filtered
 
 ## Creating intron exon intergenic fraction plot
 qc_intron_exon_fraction <- qc_metrics_filtered %>%
-   dplyr::select(c(intron_fraction, exon_fraction, intergenic_fraction, SeqID, Set)) 
-qc_fractions <- pivot_longer(qc_intron_exon_fraction, !c("SeqID", "Set"))                    
+   dplyr::select(c(intron_fraction, exon_fraction, intergenic_fraction, SeqID, Set, Group)) 
+qc_fractions <- pivot_longer(qc_intron_exon_fraction, !c("SeqID", "Set", "Group"))                    
 qc_fractions$SeqID <- factor(qc_fractions$SeqID, levels=qc_metrics_filtered$SeqID)
 qc_fractions$name <- factor(qc_fractions$name, levels=c("intergenic_fraction","intron_fraction","exon_fraction"))
 
@@ -65,12 +64,26 @@ counts <- t(pdac_data_unprocessed[, cohorts])
 counts <- counts[, colSums(counts) > 0]
 
 ###########################################
-##Protein Coding and biotype by sample graph
+######   Protein Coding and biotype by sample graph and fixing samples #####
+
 counts_df <- counts %>% as.data.frame()
 genes <- colnames(counts_df)
 counts_df$sample_name <- rownames(counts_df)
 long_counts <- pivot_longer(counts_df, !sample_name)
 
+genes_tocheck <- c("1-Dec", "1-Mar", "1-Sep", "10-Mar", "10-Sep", 
+                        "11-Mar", "11-Sep", "12-Sep", "14-Sep", "2-Mar", 
+                        "2-Sep", "3-Mar", "3-Sep", "4-Mar", "4-Sep", 
+                        "5-Mar", "5-Sep", "6-Mar", 
+                        "6-Sep", "7-Mar", "7-Sep",  "8-Mar", 
+                        "8-Sep", "9-Mar", "9-Sep")
+corrected_name <- HGNChelper::checkGeneSymbols(genes_tocheck)
+rownames(corrected_name) <- corrected_name$x
+corrected_colname <- colnames(counts_df)
+corrected_colname <- ifelse(corrected_colname %in% genes_tocheck,
+                            corrected_name[corrected_colname, "Suggested.Symbol"],
+                            corrected_colname) %>% str_replace(".\\/\\/\\/.", "_or_due_to_excel_")
+colnames(counts_df) <- corrected_colname
 #we use gencode v 27 which corresponds with ensembl 90
 #get version 90 from downloaded ensembl information for genes main from database online
 #downloaded from https://ftp.ensembl.org/pub/release-90/mysql/ensembl_mart_90/
@@ -114,15 +127,24 @@ percent_long_counts$group <- qc_metrics_metadata[match(percent_long_counts$sampl
 percent_long_counts$cohort <- qc_metrics_metadata[match(percent_long_counts$sample_name, qc_metrics_filtered$SeqID), "Source"]
 percent_long_counts$cohort <- ifelse(percent_long_counts$cohort=="CEDAR_2020", "CEDAR", "BCC")
 #lets also plot it for the discovery vs validation cohort
+##### supplemental figure 3 biotype by cancer type ######
 #TOKEEP
-biotype_by_cohort_group <- ggplot(percent_long_counts, aes(x=group, y=total_counts, fill=biotype, color=biotype)) +
-  geom_boxplot() + facet_wrap(~cohort, ncol=1) +
-  ylab("% of total read counts in sample") +xlab("Sample Type") + theme_minimal()
+write.table(percent_long_counts, file="./supplemental3_biotype_by_diagnosis.csv", quote=F, sep=",")
 
+biotype_by_cohort_group <- ggplot(percent_long_counts, aes(x=group, y=total_counts, color=biotype, fill=biotype )) +
+  geom_boxplot() + facet_wrap(~cohort, ncol=1) +
+  ylab("Proportion of total read counts in sample") +xlab("Sample Type") +
+  theme_minimal(base_family = "Helvetica", base_size = 7)
+
+ggsave("./supplemental3_figure_pdac.svg",
+       plot=biotype_by_cohort_group, height=12.0, width=18.0, units="cm")
+
+
+###### Percent biotype table ####
 #write percent biotype table
 summarized_percent_biotype <- percent_long_counts %>% group_by(biotype) %>%
   summarize(minimum=min(total_counts), mean=mean(total_counts), maximum=max(total_counts))
-write.table(summarized_percent_biotype, file="./PDAC_biotype_information_table.txt")
+#write.table(summarized_percent_biotype, file="./PDAC_biotype_information_table.txt")
 
 summarized_percent_biotype_sample<- long_counts%>% group_by(sample_name) %>%
   mutate(value=value/sum(value)) %>% group_by(biotype, sample_name) %>% 
@@ -144,6 +166,7 @@ combined_table <- combined_table[,c("Sample name", "Sample source", "Total dedup
 "misc_RNA", "other biotype" )]
 
 combined_table <- combined_table %>% arrange(`Sample source`, `Sample name`)
+
 ###################################
 ##Saturation Curves
 #this function is a very lightly modified version of the vegan::rarecurve function
@@ -231,14 +254,20 @@ reduced$name <- factor(reduced$name, levels= unique(reduced$name))
 color_palette_base <- c('#F6C142','#C2D7EC','#4075B1', '#4075B1', '#DF8244','#B02318', '#68379a', '#4eac5b')
 names(color_palette_base) <- c("IPMN", "Acute pancreatitis","Chronic pancreatitis", "Pancreatitis",
                                "Cancer_other", "Islet Cell Tumor","PDAC", "Benign Pancreas")
+##### supplemental figure 2 rarefaction curves ######
+#TOKEEP
+write.table(reduced, file= "./supplemental2_rarefaction_by_diagnosis.csv", quote=F,sep=",")
 rarefaction_curve_overall <- ggplot(data=reduced, aes(x=fractional_rarefaction, y=value,group=name, color=type)) +
   geom_line(show.legend=T, alpha=0.5) +
    scale_color_manual(values=color_palette_base) + theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
-#labelling and facet wrapping options
-#+facet_wrap(~name)
-#geom_label(data= reduced%>% group_by(.,name)%>%filter(value==max(value)) %>% ungroup(), aes(label=name), show.legend = F) +
-#TOKEEP
-rarefaction_curve_plot <- rarefaction_curve_overall +ylab("Total Number of Unique Genes In Sample") +xlab("Fraction of Reads Sampled")
+rarefaction_curve_plot <- rarefaction_curve_overall +
+  ylab("Total Number of Unique Genes In Sample") +
+  xlab("Fraction of Reads Sampled") + 
+  theme_minimal(base_family = "Helvetica", base_size = 7)
+
+ggsave("./supplemental2_figure_pdac.svg",
+       plot=rarefaction_curve_plot, height=12.0, width=18.0, units="cm")
+
 
 
