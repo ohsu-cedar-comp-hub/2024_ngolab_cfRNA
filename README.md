@@ -1,5 +1,9 @@
 # cfRNA PDAC Codebase
 
+
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15678348.svg)](https://doi.org/10.5281/zenodo.15678348)
+
 See **cfRNA_pipeline** folder for scripts used to processes sequencing data.
 
 See **Analysis_Scripts** for code to reproduce all data analysis reported in main text and supplemental material, and generation of all figures.
