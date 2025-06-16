@@ -9,6 +9,10 @@ source("survival.R")
 #### Load data and meta data ####
 rna_counts = read.csv("pdac_genecount.csv.gz",row.names=1)
 meta = read.csv("pdac_meta.csv")
+###Patient sex and exact age are not available to public
+#meta_private = read.csv("../Private_meta.csv")
+#meta = cbind(meta,Sex=meta_private$Sex)
+#meta$Age.at.Collection=meta_private$Age.at.Collection
 
 #Combine islet cell tumor diagnosis with cancer_other
 meta$Group[meta$Group=="Islet Cell Tumor"] = "Other Cancer"
@@ -27,7 +31,7 @@ ids_all = rep(TRUE,nrow(meta))                                  #All samples
 ids_noLivMet = meta$Met_Site != "liver" | meta$Group!="PDAC"    #All samples without PDAC - liver metastasis
 ids_stage12 = !meta$Stage %in% c(3,4) | meta$Group!="PDAC"      #All samples without stage 3-4 PDAC
 ids_stage34 = !meta$Stage %in% c(1,2) | meta$Group!="PDAC"      #All samples without stage 1-2 PDAC
-ids_male = meta$Gender.Flag == "M"
+ids_male = meta$Sex == "M"
 ids_ca19 = !is.na(meta$CA19_9)                                  #Samples that have CA 19-9 biomarker measurements
 ids_train = meta$Cohort=="CEDAR"
 ids_val = meta$Cohort == "BCC"
@@ -171,8 +175,16 @@ val_DEca19_all = res[[6]]
 #### Survival Analysis ####
 quans = c(.5,.5,.5) #quantiles for splitting PDAC score in each experiment
 survival_data = read.csv("PDAC_survival.csv")
+survival_data = cbind(survival_data,ca19_9=meta$CA19_9[match(survival_data[,1],meta[,1])])
 mids = match(survival_data$SeqID,meta$SeqID)
-survival_data = cbind(survival_data,age=meta$Age.at.Collection[mids],sex=meta$Gender.Flag[mids])
+### Patient sex and exact age not available to public. Random values added as filler
+if(!'Sex' %in% colnames(meta)){
+  rand_sex = sample(c("M","F"),nrow(meta),replace=TRUE)
+  rand_age = sample(25:85,nrow(meta),replace=TRUE)
+  survival_data = cbind(survival_data,age=rand_age[mids],sex=rand_sex[mids])
+} else{
+  survival_data = cbind(survival_data,age=meta$Age.at.Collection[mids],sex=meta$Sex[mids])
+}
 scores_all = c(kfold_all[[2]][,"PDAC"],val_all[[2]][,"PDAC"])
 scores_pvnc = c(kfold_nc_vs_p[[2]][,"PDAC"],val_nc_vs_p[[2]][,"PDAC"])
 scores_pvb = c(kfold_b_vs_p[[2]][,"PDAC"],val_b_vs_p[[2]][,"PDAC"])
@@ -188,30 +200,31 @@ smote_comparison(val_all[[4]],val_all[[5]],val_nsmote_all[[4]])
 #normalization figure
 normalization_figure(rna_counts,intrinsic_genes)
 #deconvolution panels
-p_fac = deconvolution_perc_facet(meta,dc_list,list(ids_all,ids_noLivMet,ids_stage12),c("All Samples","No Liver Met","Stage 1 & 2"),dir="../Figures/",tis_num=5)
-p_fac_train = deconvolution_perc_facet(meta,dc_list_t,list(ids_all & ids_train,ids_noLivMet & ids_train,ids_stage12 & ids_train),c("All Samples","No Liver Met","Stage 1 & 2"),dir="../Figures/",tis_num=5)
-p_fac_val = deconvolution_perc_facet(meta,dc_list_v,list(ids_all & ids_val,ids_noLivMet & ids_val,ids_stage12 & ids_val),c("All Samples","No Liver Met","Stage 1 & 2"),dir="../Figures/",tis_num=5)
+p_fac = deconvolution_perc_facet(meta,dc_list,list(ids_all,ids_noLivMet,ids_stage12),c("All Samples","No Liver Met","Stage 1 & 2"),"fig_3b_tissue_decon",dir="../Figures/",tis_num=5)
+p_fac_train = deconvolution_perc_facet(meta,dc_list_t,list(ids_all & ids_train,ids_noLivMet & ids_train,ids_stage12 & ids_train),c("All Samples","No Liver Met","Stage 1 & 2"),"supp_7a_cedar_tissue_decon",dir="../Figures/",tis_num=5)
+p_fac_val = deconvolution_perc_facet(meta,dc_list_v,list(ids_all & ids_val,ids_noLivMet & ids_val,ids_stage12 & ids_val),c("All Samples","No Liver Met","Stage 1 & 2"),"supp_7b_bcc_tissue_decon",dir="../Figures/",tis_num=5)
 p_at = atlas_heat(atlas)
 #assemble into one figure
 decon_figure(p_at,p_fac)
 decon_figure_split(p_fac_train,p_fac_val)
 #Auc plots: cross validation and external validation
-figure_auc_facet(meta[ids_train,],list(kfold_b_vs_p,kfold_nc_vs_p,kfold_all),"AUC_train",group_colors)
-figure_auc_facet(meta[ids_val,],list(val_b_vs_p,val_nc_vs_p,val_all),"AUC_val",group_colors)
-figure_auc_facet(meta[ids_noLivMet & ids_train,],list(kfold_noLiv_b_vs_p,kfold_noLiv_nc_vs_p,kfold_noLiv_all),"AUC_train_noLiverMet",group_colors)
-figure_auc_facet(meta[ids_noLivMet & ids_val,],list(val_noLiv_b_vs_p,val_noLiv_nc_vs_p,val_noLiv_all),"AUC_val_noLiverMet",group_colors)
-figure_auc_facet(meta[ids_train,],list(kfold_nsmote_b_vs_p,kfold_nsmote_nc_vs_p,kfold_nsmote_all),"AUC_train_noSmote",group_colors)
-figure_auc_facet(meta[ids_val,],list(val_nsmote_b_vs_p,val_nsmote_nc_vs_p,val_nsmote_all),"AUC_val_noSmote",group_colors)
+figure_auc_facet(meta[ids_train,],list(kfold_b_vs_p,kfold_nc_vs_p,kfold_all),"AUC_train","fig_4",group_colors,main_fig = TRUE)
+figure_auc_facet(meta[ids_val,],list(val_b_vs_p,val_nc_vs_p,val_all),"AUC_val","fig_5",group_colors,main_fig = TRUE)
+figure_auc_facet(meta[ids_noLivMet & ids_train,],list(kfold_noLiv_b_vs_p,kfold_noLiv_nc_vs_p,kfold_noLiv_all),"AUC_train_noLiverMet","supp_16",group_colors)
+figure_auc_facet(meta[ids_noLivMet & ids_val,],list(val_noLiv_b_vs_p,val_noLiv_nc_vs_p,val_noLiv_all),"AUC_val_noLiverMet","supp_17",group_colors)
+#figure_auc_facet(meta[ids_train,],list(kfold_nsmote_b_vs_p,kfold_nsmote_nc_vs_p,kfold_nsmote_all),"AUC_train_noSmote","supp_11",group_colors)
+figure_auc_facet(meta[ids_val,],list(val_nsmote_b_vs_p,val_nsmote_nc_vs_p,val_nsmote_all),"AUC_val_noSmote","supp_11",group_colors)
 #CA19-9 comparison
 train_lists = list(list(kfold_ca19_b_vs_p,kfold_ca19_nc_vs_p,kfold_ca19_all),list(kfold_DE_b_vs_p,kfold_DE_nc_vs_p,kfold_DE_all),list(kfold_DEca19_b_vs_p,kfold_DEca19_nc_vs_p,kfold_DEca19_all))
 test_lists = list(list(val_ca19_b_vs_p,val_ca19_nc_vs_p,val_ca19_all),list(val_DE_b_vs_p,val_DE_nc_vs_p,val_DE_all),list(val_DEca19_b_vs_p,val_DEca19_nc_vs_p,val_DEca19_all))
-npv_vals = figure_full_ca19(meta,train_lists,test_lists,c("CA19-9","Genes","Genes+CA19-9"))
-figure_pdac_ppv_npv(meta,pdac_scores,ids_train,ids_val,"PDAC","PDAC Score",npvs=npv_vals)
+npv_vals = figure_full_ca19(meta,train_lists,test_lists,c("CA19-9","Genes","Genes+CA19-9"),"fig_6")
+figure_pdac_ppv_npv(meta,pdac_scores,ids_train,ids_val,"PDAC","PDAC Score","supp_20",npvs=npv_vals)
 ca_ids = !is.na(meta$CA19_9)
-figure_pdac_ppv_npv(meta[ca_ids,],log(meta$CA19_9[ca_ids]),ids_train[ca_ids],ids_val[ca_ids],"CA19_9","Log CA19-9",cutoff=log(37))
+figure_pdac_ppv_npv(meta[ca_ids,],log(meta$CA19_9[ca_ids]),ids_train[ca_ids],ids_val[ca_ids],"CA19_9","Log CA19-9","supp_19",cutoff=log(37))
 #Survival plots
 figure_survival_plot_coxph(meta,score_list,survival_pvb,survival_pvnc,survival_all,quans)
-#Gene expression plots
+#Gene expression plots and volcano
 biomaker_expression(rna_counts_norm,DE_genes,meta,group_levels,rows=4)
+de_volcano_plot(DE,meta)
 #Parameter testing plots
 param_plots(param_res)
