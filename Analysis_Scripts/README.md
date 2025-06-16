@@ -2,6 +2,8 @@
 
 Use **main_script.R** to run through all data analysis and figure generation. This will step through the normalization of the raw count matrices, DE gene discovery, classification tasks, tissue deconvolution of DE gene signals, surival analysis, and generation of all main and supplemental figures presented in the paper.
 
+**intrinsic_factors.R** contains the functions we use to fit the NMF model to factorize gene contributions. **spin_data_analysis.R** uses these functions to create the intrinsic and extrinsic gene factors used in our normalization from healthy cohort data.
+
 We also provide **no_intrinsic_norm.R**, which runs through a similar biomarker discover and classification analysis using a more traditional TPM normalization.
 
 These scripts should be run in the Analysis_Scripts folder, as they will depend on the R files and data files there. A breakdown of the data files included is provided below.
@@ -11,10 +13,12 @@ Our cf-normalization method can be used outside of this analysis by running the 
 
 See main_script.R for an example use of cf_norm and loading the factor files.
 
+Normalization factors can be re-computed by following the code in spin_data_analysis.R. This calls the functions in intrinsic_factors.R to create the intrinsic and extrinsic gene factors used for normalization. Notably the function adjust_factors can be used to adjust the factors learned in spin_data_intrinsic.csv, or any others, to include genes from an input dataset.
+
 # Data files provided
 pdac_genecount.csv.gz: Zipped raw gene count matrix for all CEDAR and BCC samples analyzed.
 
-pdac_meta.csv: Metadata file for pdac_genecount.csv.gz.
+pdac_meta.csv: Metadata file for pdac_genecount.csv.gz. Patient sex has been removed and age aggregated for public distribution.
 
 PDAC_survival.csv: Additional metadata indicating the disease status and survival of PDAC patients at followup date.
 
