@@ -1,0 +1,159 @@
+##############################################################################
+# Genome and project-specific files that will change from project-to-project
+##############################################################################
+
+# GTF file for the genome build you would like to use
+gtf_file:
+  /home/groups/CEDAR/anurpa/genomes/gencode.v27.annotation.gtf
+#This next file is an ERCC  version of the gencod gtf annotation
+#gtf_file:
+#  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/tools/hg38_gen42_ref.gtf
+
+# Bed file for rseqc function read_distribution
+bed_file:
+  /home/groups/CEDAR/anurpa/genomes/gencode_v27.bed
+#  /home/groups/CEDAR/spilioto/tools/hg38_ref_all.bed
+# Pre-built star indexes for hg38
+star_index:
+   /home/groups/CEDAR/anno/indices/star/hg38_ERCC 
+#non ERCC version
+#  /home/groups/CEDAR/anno/indices/star/cfRNA_star_index
+
+exon_gtf:
+  /home/groups/CEDAR/anurpa/genomes/gencode.housekeeping_genes.exon.gtf
+TE_gtf:
+  /home/groups/CEDAR/anno/gtf/hg38_rmsk_TE.gtf
+genome:
+  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/tools/GRCh38.primary_assembly.genome.fa
+#  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/tools/hg38_gen42.fa
+ens2geneID:
+  /home/groups/CEDAR/spilioto/biomart_ensembl_geneid.txt
+ref_gtf:
+  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/tools/hg38_gen42_ref.gtf
+
+####################################################################
+# Tool-specific files that will not change from project-to-project
+####################################################################
+
+# Pre-built genome indexes for various organisms which we will screen against to look for contamination
+conf:
+  /home/groups/CEDAR/tools/FastQ_Screen_Genomes/fastq_screen.conf
+# Paths to various tools which are used in this pipeline
+star_tool:
+  /home/groups/CEDAR/tools/STAR/tags/2.5.3a/bin/Linux_x86_64/STAR
+sickle_tool:
+  /home/groups/CEDAR/tools/sickle
+picard_tool:
+  /home/groups/CEDAR/tools/picard-tools-1.119/MarkDuplicates.jar
+bamstats_tool:
+  /home/groups/CEDAR/roskamsh/tools/bamstats_bin/bamstats
+
+##########################################
+# Important project-specific paths/files
+##########################################
+
+# Metadata needed for differential expression analysis
+omic_meta_data:
+#  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/PDAC_combined.txt
+  /home/groups/CEDAR/spilioto/Projects/PDAC_ncRNA/biofluids.txt
+
+#############################################################################################
+# Project-specific specifications you will need to make prior to submission of the pipeline
+#############################################################################################
+
+project_id:
+  ncRNA_PDAC
+assembly:
+  hg38.90
+#whatever name is the basline name in the column used for the linear model
+TE_baseline:
+  CSF
+# option to print GO term tree (0/1)
+printTree:
+  1
+## fold change cutoff (not log2 transformed) for GO analysis and volcano pot
+FC:
+  2
+## FDR adjusted p-value cutoff for GO analysis and volcano plot
+adjp:
+  0.01
+## The column name of the characteristic you would like to do DE on. Example: Diagnosis, genotype, etc. This must be a column in your omic_meta_data. 
+linear_model:
+  Set
+seq_layout:
+  PE
+#column name of whatever the sample id column is
+sample_id:
+  SeqID
+meta_columns_to_plot:
+  Group: Group
+  Set: Set
+diffexp:
+##contrasts for the deseq2 results method
+  contrasts:
+    Cancer_PDAC-vs-Benign:
+      - Cancer_PDAC
+      - Benign
+    Pancreatitis-vs-Benign:
+      - Pancreatitis
+      - Benign
+    Cancer_other-vs-Benign:
+      - Cancer_other
+      - Benign
+    IPMN-vs-Benign:
+      - IPMN
+      - Benign
+    Normal-vs-Benign:
+      - Normal
+      - Benign
+    Cancer_PDAC-vs-Pancreatitis:
+      - Cancer_PDAC
+      - Pancreatitis
+    Cancer_PDAC-vs-IPMN:
+      - Cancer_PDAC
+      - IPMN
+    Cancer_PDAC-vs-Cancer_other:
+      - Cancer_PDAC
+      - Cancer_other
+    Cancer_PDAC-vs-Normal:
+      - Cancer_PDAC
+      - Normal
+    Pancreatitis-vs-IPMN:
+      - Pancreatitis
+      - IPMN
+    Pancreatitis-vs-Cancer_other:
+      - Pancreatitis
+      - Cancer_other
+    Pancreatitis-vs-Normal:
+      - Pancreatitis
+      - Normal
+    Cancer_other-vs-IPMN:
+      - Cancer_other
+      - IPMN
+    Cancer_other-vs-Normal:
+      - Cancer_other
+      - Normal
+    IPMN-vs-Normal:
+      - IPMN
+      - Normal
+  LRT:
+    - Cancer_PDAC
+    - Cancer_other
+    - Pancreatitis
+    - IPMN
+    - Benign
+    - Normal
+pca:
+  labels:
+## columns of sample sheet to use for PCA
+    - Group
+### If you would like to colour your QC plots by an RColorBrewer palette, list that palette under the rcolorbrewer parameter, otherwise, write "NA"
+### If you would like to colour your QC plots by specific colours, please list them under the discrete category, with one colour for each bullet point
+#### The discrete colours will be assigned to your Conditions (ie. linear_model) in the order that they show up in your metadata table, when it is ordered alphabetically by sample ID
+#### There must be the same number of colours listed as there are Conditions
+### If no options are specified, the default ggplot2 colours are used
+colors:
+  rcolorbrewer:
+    - Paired
+  discrete:
+    - NA

@@ -1,0 +1,22 @@
+name: fastqc
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - fastqc=0.11.9=hdfd78af_1
+  - font-ttf-dejavu-sans-mono=2.37=h6964260_0
+  - fontconfig=2.13.1=h6c09931_0
+  - freetype=2.10.4=h5ab3b9f_0
+  - icu=58.2=he6710b0_3
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libuuid=1.0.3=h1bed415_2
+  - libxml2=2.9.10=hb55368b_3
+  - openjdk=8.0.152=h7b6447c_3
+  - perl=5.26.2=h14c3975_0
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
+prefix: /home/groups/CEDAR/spilioto/tools/anaconda3/envs/fastqc
